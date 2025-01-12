@@ -43,31 +43,55 @@ Youdemy est une plateforme d'apprentissage en ligne interactive et personnalisé
 ## Structure du Projet
 ```
 youdemy_platform/
-├── src/                     # Répertoire principal pour le code source
-│   ├── Config/              # Configuration (ex: connexion à la BDD)
-│   │   └── Database.php
-│   ├── Controllers/         # Contrôleurs
-│   │   ├── AuthController.php
-│   │   ├── UserController.php
-│   │   ├── CourseController.php
-│   │   ├── CategoryController.php
-│   │   └── TagController.php
-│   ├── Models/              # Modèles
-│   │   ├── User.php
-│   │   ├── Course.php
-│   │   ├── Category.php
-│   │   └── Tag.php
-│   └── Utils/               # Classes utilitaires (ex : validation, helpers)
-│       └── Validator.php
-├── public/                  # Accessible au public (index, login, etc.)
-│   ├── index.php            # Point d'entrée principal
-│   ├── login.php            # Connexion
-│   ├── register.php         # Inscription
-│   └── assets/              # Fichiers CSS, JS, images
-├── vendor/                  # Géré par Composer
-├── composer.json            # Configuration Composer pour l'autoload
-└── .htaccess                # (Optionnel) Réécriture d'URLs
-
+├── config/                 
+│   ├── database.php          # Configuration de la base de données
+│   ├── constants.php         # Constantes globales (rôles, états, etc.)
+│   └── helpers.php           # Fonctions utilitaires globales
+├── controllers/            
+│   ├── AuthController.php        # Gestion de l'authentification
+│   ├── CourseController.php      # Gestion des cours (enseignants et étudiants)
+│   ├── CategoryController.php    # Gestion des catégories
+│   ├── UserController.php        # Gestion des utilisateurs
+│   └── AdminController.php       # Actions spécifiques aux administrateurs
+├── models/                 
+│   ├── User.php               # Modèle des utilisateurs
+│   ├── Course.php             # Modèle des cours
+│   ├── Category.php           # Modèle des catégories
+│   └── Enrollment.php         # Modèle des inscriptions (many-to-many)
+├── views/                  
+│   ├── auth/                  # Vues pour la connexion et l'inscription
+│   │   ├── login.php       
+│   │   └── register.php    
+│   ├── dashboard/             # Vues du tableau de bord
+│   │   ├── admin.php       
+│   │   ├── teacher.php     
+│   │   └── student.php     
+│   ├── courses/            # Pages liées aux cours
+│   │   ├── list.php        # Liste des cours
+│   │   ├── details.php     # Détails d'un cours
+│   │   ├── create.php      # Formulaire pour ajouter un cours
+│   │   └── edit.php        # Formulaire pour modifier un cours
+│   ├── users/              # Vues des utilisateurs
+│   │   └── list.php        # Liste des utilisateurs
+│   └── partials/           # Vues partielles (header, footer, etc.)
+│       ├── header.php      
+│       └── footer.php      
+├── public/                 
+│   ├── index.php           # Point d'entrée principal
+│   ├── assets/             # CSS, JS, images
+│   │   ├── css/
+│   │   ├── js/
+│   │   └── images/
+│   ├── uploads/            # Dossier pour stocker les fichiers téléchargés (cours, images, etc.)
+│   └── .htaccess           # Sécurisation et réécriture des URLs
+├── tests/                  # Tests unitaires et fonctionnels
+│   ├── controllers/        # Tests des contrôleurs
+│   ├── models/             # Tests des modèles
+│   └── views/              # Tests des vues (si nécessaire)
+├── vendor/                 # Géré par Composer
+├── .env                    # Variables d'environnement (configuration sensible)
+├── composer.json           
+└── README.md               # Documentation du projet
 ```
 
 ## Installation
