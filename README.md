@@ -42,20 +42,32 @@ Youdemy est une plateforme d'apprentissage en ligne interactive et personnalisé
 
 ## Structure du Projet
 ```
-project/
-├── src/                     # Code source
-│   ├── Config/              # Configuration (connexion BDD, constantes)
-│   ├── Controllers/         # Contrôleurs (logique des fonctionnalités)
-│   ├── Models/              # Modèles (interactions avec la BDD)
-│   ├── Utils/               # Outils utilitaires (validation, helpers)
-├── public/                  # Accessible publiquement
+youdemy_platform/
+├── src/                     # Répertoire principal pour le code source
+│   ├── Config/              # Configuration (ex: connexion à la BDD)
+│   │   └── Database.php
+│   ├── Controllers/         # Contrôleurs
+│   │   ├── AuthController.php
+│   │   ├── UserController.php
+│   │   ├── CourseController.php
+│   │   ├── CategoryController.php
+│   │   └── TagController.php
+│   ├── Models/              # Modèles
+│   │   ├── User.php
+│   │   ├── Course.php
+│   │   ├── Category.php
+│   │   └── Tag.php
+│   └── Utils/               # Classes utilitaires (ex : validation, helpers)
+│       └── Validator.php
+├── public/                  # Accessible au public (index, login, etc.)
 │   ├── index.php            # Point d'entrée principal
-│   ├── login.php            # Connexion utilisateur
-│   ├── register.php         # Inscription utilisateur
-│   └── assets/              # CSS, JS, images
+│   ├── login.php            # Connexion
+│   ├── register.php         # Inscription
+│   └── assets/              # Fichiers CSS, JS, images
 ├── vendor/                  # Géré par Composer
-├── composer.json            # Configuration des dépendances
-└── .htaccess                # Configuration des URL propres
+├── composer.json            # Configuration Composer pour l'autoload
+└── .htaccess                # (Optionnel) Réécriture d'URLs
+
 ```
 
 ## Installation
@@ -68,7 +80,7 @@ project/
 ### Étapes d'installation
 1. Clonez le projet :
    ```bash
-   git clone https://github.com/MouadHallaffou/Youdemy_plateform
+   git clone https://github.com/MouadHallaffou/Youdemy_plateform/youdemy.git
    ```
 
 2. Accédez au dossier du projet :
