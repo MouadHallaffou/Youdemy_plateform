@@ -43,55 +43,54 @@ Youdemy est une plateforme d'apprentissage en ligne interactive et personnalisé
 ## Structure du Projet
 ```
 youdemy_platform/
-├── config/                 
-│   ├── database.php          # Configuration de la base de données
-│   ├── constants.php         # Constantes globales (rôles, états, etc.)
-│   └── helpers.php           # Fonctions utilitaires globales
-├── controllers/            
-│   ├── AuthController.php        # Gestion de l'authentification
-│   ├── CourseController.php      # Gestion des cours (enseignants et étudiants)
-│   ├── CategoryController.php    # Gestion des catégories
-│   ├── UserController.php        # Gestion des utilisateurs
-│   └── AdminController.php       # Actions spécifiques aux administrateurs
-├── models/                 
-│   ├── User.php               # Modèle des utilisateurs
-│   ├── Course.php             # Modèle des cours
-│   ├── Category.php           # Modèle des catégories
-│   └── Enrollment.php         # Modèle des inscriptions (many-to-many)
-├── views/                  
-│   ├── auth/                  # Vues pour la connexion et l'inscription
-│   │   ├── login.php       
-│   │   └── register.php    
-│   ├── dashboard/             # Vues du tableau de bord
-│   │   ├── admin.php       
-│   │   ├── teacher.php     
-│   │   └── student.php     
-│   ├── courses/            # Pages liées aux cours
-│   │   ├── list.php        # Liste des cours
-│   │   ├── details.php     # Détails d'un cours
-│   │   ├── create.php      # Formulaire pour ajouter un cours
-│   │   └── edit.php        # Formulaire pour modifier un cours
-│   ├── users/              # Vues des utilisateurs
-│   │   └── list.php        # Liste des utilisateurs
-│   └── partials/           # Vues partielles (header, footer, etc.)
-│       ├── header.php      
-│       └── footer.php      
-├── public/                 
-│   ├── index.php           # Point d'entrée principal
-│   ├── assets/             # CSS, JS, images
-│   │   ├── css/
-│   │   ├── js/
-│   │   └── images/
-│   ├── uploads/            # Dossier pour stocker les fichiers téléchargés (cours, images, etc.)
-│   └── .htaccess           # Sécurisation et réécriture des URLs
-├── tests/                  # Tests unitaires et fonctionnels
-│   ├── controllers/        # Tests des contrôleurs
-│   ├── models/             # Tests des modèles
-│   └── views/              # Tests des vues (si nécessaire)
-├── vendor/                 # Géré par Composer
-├── .env                    # Variables d'environnement (configuration sensible)
-├── composer.json           
+|App/
+
+├── config/                 # Configuration générale du projet
+│   ├── database.php        # Fichier de connexion à la base de données
+│   └── constants.php       # Définition des constantes globales utilisées dans le projet
+
+├── controllers/                 # Contrôleurs pour la gestion des fonctionnalités
+│   ├── AuthController.php       # Contrôleur pour l'authentification (login, register, logout)
+│   ├── UserController.php       # Contrôleur pour la gestion des utilisateurs (profil, liste, etc.)
+│   ├── CourseController.php     # Contrôleur pour la gestion des cours (ajout, modification, inscription)
+│   ├── AdminController.php      # Contrôleur pour les fonctionnalités spécifiques aux administrateurs
+│   └── CategoryController.php   # Contrôleur pour la gestion des catégories
+
+├── models/                 # Classes et interactions avec la base de données (CRUD)
+│   ├── User.php            # Classe représentant les utilisateurs
+│   ├── Course.php          # Classe représentant les cours
+│   ├── Category.php        # Classe représentant les catégories
+│   └── Enrollment.php      # Classe représentant les inscriptions des utilisateurs aux cours
+
+├── views/                  # Fichiers de vue pour l'affichage des pages
+│   ├── auth/               # Vues liées à l'authentification
+│   │   ├── login.php       # Page de connexion
+│   │   └── register.php    # Page d'inscription
+│   ├── courses/            # Vues pour les pages relatives aux cours
+│   │   ├── list.php        # Liste des cours disponibles
+│   │   └── details.php     # Détails d'un cours spécifique
+│   ├── admin/              # Vues pour les fonctionnalités administratives
+│   │   ├── dashboard.php   # Tableau de bord pour l'administrateur
+│   │   └── users.php       # Liste des utilisateurs gérés par l'administrateur
+│   └── shared/             # Éléments réutilisables sur toutes les pages
+│       ├── header.php      # En-tête commun à toutes les pages
+│       └── footer.php      # Pied de page commun à toutes les pages
+
+├── public/                 # Fichiers accessibles au public
+│   ├── login.php           # Accès direct à la page de connexion
+│   ├── register.php        # Accès direct à la page d'inscription
+│   └── assets/             # Dossier contenant les fichiers statiques
+│       ├── css/            # Fichiers de style CSS
+│       ├── js/             # Scripts JavaScript
+│       └── images/         # Images utilisées sur le site
+
+├── index.php               # Point d'entrée principal du projet
+
+├── .htaccess               # Configuration optionnelle pour la réécriture des URLs
+├── .env                    # Variables d'environnement pour configurer l'application (par ex., clé API, mode de développement)
+├── composer.json           # Fichier de configuration pour Composer, incluant l'autoloading des classes
 └── README.md               # Documentation du projet
+
 ```
 
 ## Installation
