@@ -31,7 +31,7 @@ CREATE TABLE tags (
     PRIMARY KEY (tag_id)
 );
 
--- Table des cours
+-- Table des cours-- Table des cours
 CREATE TABLE courses (
     course_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     titre VARCHAR(250) NOT NULL,
@@ -41,10 +41,13 @@ CREATE TABLE courses (
     date_status TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     category_id BIGINT UNSIGNED,
     enseignant_id BIGINT UNSIGNED NOT NULL,
+    video_url VARCHAR(255) DEFAULT NULL, 
+    document_text TEXT DEFAULT NULL, 
     PRIMARY KEY (course_id),
     FOREIGN KEY (category_id) REFERENCES categories(category_id) ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (enseignant_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
 
 -- Table des relations entre cours et tags
 CREATE TABLE course_tag (
