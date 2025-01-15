@@ -44,4 +44,18 @@ abstract class BaseModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function countUser($table){
+        $query = "SELECT * FROM $table WHERE role = 'user'";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function countTeachers($table){
+        $query = "SELECT * FROM $table WHERE role = 'teacher'";
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 }

@@ -14,6 +14,9 @@
 </head>
 
 <body class="sb-nav-fixed">
+
+    <!-- includes -->
+     
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
         <!-- Navbar Brand-->
         <a class="navbar-brand ps-4" href="http://localhost/Youdemy_plateform/App/public/dist/dashboard.php"> YOUDEMY</a>

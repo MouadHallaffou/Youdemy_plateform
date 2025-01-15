@@ -3,6 +3,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 use App\Config\Database;
 use App\Models\Category;
+$pdo = Database::connect();
 
 class CatyroryController {
     private Category $categoryModel;
@@ -60,12 +61,8 @@ class CatyroryController {
 
 }
 
-// Connect to the database and create an instance of the controller
-$pdo = Database::connect();
 $categoryController = new CatyroryController($pdo);
 
-// Handle the incoming request
 $categoryController->handleRequest();
 
-// Display categorys after handling the request
 $categorys = $categoryController->displayCategories();

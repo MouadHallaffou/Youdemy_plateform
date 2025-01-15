@@ -3,6 +3,7 @@ require_once __DIR__ . '/../../vendor/autoload.php';
 
 use App\Config\Database;
 use App\Models\Tag;
+$pdo = Database::connect();
 
 class TagController {
     private Tag $tagModel;
@@ -16,7 +17,6 @@ class TagController {
     }
 
     public function createTag(string $tagName): void {
-        // Assuming there is a dedicated method to handle the creation from the request
         if (!empty($tagName)) {
             $this->tagModel->createTag($tagName);
             header("Location: ../views/tags.php");
@@ -61,12 +61,10 @@ class TagController {
 
 }
 
-// Connect to the database and create an instance of the controller
-$pdo = Database::connect();
 $tagController = new TagController($pdo);
 
-// Handle the incoming request
 $tagController->handleRequest();
 
-// Display tags after handling the request
 $tags = $tagController->displayTags();
+
+

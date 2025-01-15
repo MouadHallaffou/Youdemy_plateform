@@ -1,3 +1,12 @@
+<?php
+require_once __DIR__ . '../../../vendor/autoload.php';
+use App\Config\Database;
+use App\Models\Category;
+$pdo = Database::connect();
+$categoryModel = new Category($pdo);
+$categories = $categoryModel->getAllCategories();
+$totalcategories = count($categories);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
