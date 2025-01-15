@@ -3,7 +3,6 @@ require_once __DIR__ . '../../../vendor/autoload.php';
 
 use App\Config\Database;
 use App\Models\Tag;
-
 $pdo = Database::connect();
 $tagModel = new Tag($pdo);
 $tags = $tagModel->getAllTags();

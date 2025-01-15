@@ -48,8 +48,8 @@
                         </a>
                         <div class="collapse" id="collapseTags" aria-labelledby="headingTags" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="../../../App/views/tags.php">Tags</a>
-                                <a class="nav-link" href="../../../App/views/add_tag.php">Add tag</a>
+                                <a class="nav-link" href="http://localhost/Youdemy_plateform/App/views/tags.php">Tags</a>
+                                <a class="nav-link" href="http://localhost/Youdemy_plateform/App/views/add_tag.php">Add tag</a>
                             </nav>
                         </div>
 
@@ -61,8 +61,8 @@
                         </a>
                         <div class="collapse" id="collapseCategories" aria-labelledby="headingCategories" data-bs-parent="#sidenavAccordion">
                             <nav class="sb-sidenav-menu-nested nav">
-                                <a class="nav-link" href="view-categories.php">catégories</a>
-                                <a class="nav-link" href="add-categories.php">Add catégory</a>
+                                <a class="nav-link" href="http://localhost/Youdemy_plateform/App/views/categories.php">catégories</a>
+                                <a class="nav-link" href="http://localhost/Youdemy_plateform/App/views/add_category.php">Add catégory</a>
                             </nav>
                         </div>
 

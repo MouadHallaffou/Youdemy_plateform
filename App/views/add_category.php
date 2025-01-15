@@ -1,3 +1,12 @@
+<?php
+require_once __DIR__ . '../../../vendor/autoload.php';
+use App\Config\Database;
+use App\Models\Category;
+$pdo = Database::connect();
+$categoryModel = new Category($pdo);
+$categories = $categoryModel->getAllCategories();
+$totalcategories = count($categories);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -43,56 +52,53 @@
     </nav>
 
     <div id="layoutSidenav">
+
         <?php
         require_once '../public/dist/shared/sidebar.php';
         ?>
-        
+
         <div id="layoutSidenav_content">
             <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Modifier un Tag</h1>
+                <h1 class="mt-4">Dashboard</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item active"></li>
+                    </ol>
 
-                    <?php
-                    require_once '../controllers/crud_tags.php'; 
-                    $tagId = $_GET['id'] ?? null;
-                    $tag = $tagController->getTagById($tagId);
-                    if ($tag):
-                    ?>
-
-                    <div class="modal show" id="updatetagModal" tabindex="-1" aria-labelledby="updatetagModalLabel" aria-hidden="true" style="display: block;">
+                    <div class="modal show" id="addcategoryModal" tabindex="-1" aria-labelledby="addcategoryModalLabel" aria-hidden="true" style="display: block;">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h5 class="modal-title" id="updatetagModalLabel">Modifier Tags</h5>
+                                    <h5 class="modal-title" id="addcategoryModalLabel">Ajouter une categorys</h5>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="../controllers/crud_tags.php" method="POST">
-                                        <input type="hidden" name="tag_id" value="<?= htmlspecialchars($tag['tag_id']) ?>">
+                                    <form action="../controllers/crud_categories.php" method="POST">
                                         <div class="mb-3">
-                                            <label for="tag_name" class="form-label">Nom de tag</label>
-                                            <input type="text" class="form-control" id="tag_name" name="tagEdit_name" value="<?= htmlspecialchars($tag['name']) ?>" required>
+                                            <label for="category_name" class="form-label">Nom de categorys</label>
+                                            <input type="text" class="form-control" id="category_name" name="category_name" required>
                                         </div>
-                                        <button type="submit" class="btn btn-primary">Modifier</button>
-                                        <a href="../views/tags.php" class="btn btn-secondary">Annuler</a>
+                                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                                        <a href="categories.php" class="btn btn-secondary">Annuler</a>
                                     </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <?php endif; ?>
 
-                    <!-- Display Total Tags -->
                     <div class="row mt-4">
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-primary shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Tags</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= count($tags) ?? 0; ?></div>
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Total categories</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <?= $totalcategories ?? 0; ?>
+                                            </div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-tags fa-2x text-gray-300"></i>
+                                            <i class="fas fa-category fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -100,7 +106,6 @@
                         </div>
                     </div>
 
-                    <!-- List of Tags -->
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-table me-1"></i>
@@ -116,20 +121,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <?php if (!empty($tags)): ?>
-                                        <?php foreach ($tags as $tag): ?>
+                                    <?php if (!empty($categories)): ?>
+                                        <?php foreach ($categories as $category): ?>
                                             <tr>
-                                                <td><?= htmlspecialchars($tag['tag_id']) ?></td>
-                                                <td><?= htmlspecialchars($tag['name']) ?></td>
+                                                <td><?= htmlspecialchars($category['category_id']) ?></td>
+                                                <td><?= htmlspecialchars($category['name']) ?></td>
                                                 <td>
-                                                    <a href="../controllers/crud_tags.php?action=edit&id=<?= htmlspecialchars($tag['tag_id']) ?>" class="btn btn-sm btn-primary">Edit</a>
-                                                    <a href="../controllers/crud_tags.php?action=delete&id=<?= htmlspecialchars($tag['tag_id']) ?>" class="btn btn-sm btn-danger">Delete</a>
+                                                    <a href="../views/edit_category.php?action=edit&id=<?= htmlspecialchars($category['category_id']) ?>" class="btn btn-sm btn-primary">Edit</a>
+                                                    <a href="../controllers/crud_categories.php?action=delete&id=<?= htmlspecialchars($category['category_id']) ?>" class="btn btn-sm btn-danger">Delete</a>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>
-                                            <td colspan="3">Aucun Tag disponible.</td>
+                                            <td colspan="3">Aucun category disponible.</td>
                                         </tr>
                                     <?php endif; ?>
                                 </tbody>
@@ -141,7 +146,6 @@
             <?php require_once '../public/dist/shared/footer.php'; ?>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="../public/dist/js/scripts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>

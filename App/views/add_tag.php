@@ -1,3 +1,13 @@
+<?php
+require_once __DIR__ . '../../../vendor/autoload.php';
+
+use App\Config\Database;
+use App\Models\Tag;
+$pdo = Database::connect();
+$tagModel = new Tag($pdo);
+$tags = $tagModel->getAllTags();
+$totaltags = count($tags); 
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -49,17 +59,32 @@
         ?>
 
         <div id="layoutSidenav_content">
-        <main>
+            <main>
                 <div class="container-fluid px-4">
-                    <h1 class="mt-4">Ajouter une Tag</h1>
-                    <form action="../controllers/crud_tags.php" method="POST">
-                        <div class="mb-3">
-                            <label for="tag_name" class="form-label">Nom de Tag</label>
-                            <input type="text" class="form-control" id="tag_name" name="tag_name" required>
+                    <h1 class="mt-4">Dashboard</h1>
+                    <ol class="breadcrumb mb-4">
+                        <li class="breadcrumb-item active"></li>
+                    </ol>
+
+                    <div class="modal show" id="addtagModal" tabindex="-1" aria-labelledby="addtagModalLabel" aria-hidden="true" style="display: block;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addtagModalLabel">Ajouter une Tags</h5>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="../controllers/crud_tags.php" method="POST">
+                                        <div class="mb-3">
+                                            <label for="tag_name" class="form-label">Nom de tags</label>
+                                            <input type="text" class="form-control" id="tag_name" name="tag_name" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                                        <a href="../public/dist/dashboard.php" class="btn btn-secondary">Annuler</a>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Ajouter</button>
-                        <a href="../views/tags.php" class="btn btn-secondary">Annuler</a>
-                    </form>
+                    </div>
 
                     <div class="row mt-4">
                         <div class="col-xl-3 col-md-6 mb-4">
@@ -70,7 +95,7 @@
                                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                                                 Total Tags</div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <?= $totaltags ?? 0; // Assurez-vous que $totaltags est alimenté dans ce fichier ?>
+                                                <?= count($tags) ?? 0; ?>
                                             </div>
                                         </div>
                                         <div class="col-auto">
@@ -85,26 +110,33 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-table me-1"></i>
-                            Liste des Tags
+                            DataTable
                         </div>
                         <div class="card-body">
                             <table id="datatablesSimple">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Nom</th>
-                                        <th>Actions</th>
+                                        <th>NAME</th>
+                                        <th>ACTIONS</th>
                                     </tr>
                                 </thead>
+                                <tfoot>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>NAME</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </tfoot>
                                 <tbody>
                                     <?php if (!empty($tags)): ?>
                                         <?php foreach ($tags as $tag): ?>
                                             <tr>
-                                                <td><?= htmlspecialchars($tag['id']) ?></td>
+                                                <td><?= htmlspecialchars($tag['tag_id']) ?></td>
                                                 <td><?= htmlspecialchars($tag['name']) ?></td>
                                                 <td>
-                                                    <a href="../controllers/crud_tags.php?action=edit&id=<?= htmlspecialchars($tag['id']) ?>" class="btn btn-sm btn-primary">Edit</a>
-                                                    <a href="../controllers/crud_tags.php?action=delete&id=<?= htmlspecialchars($tag['id']) ?>" class="btn btn-sm btn-danger">Delete</a>
+                                                    <a href="../views/edit_tag.php?action=edit&id=<?= htmlspecialchars($tag['tag_id']) ?>" class="btn btn-sm btn-primary">Edit</a>
+                                                    <a href="../controllers/crud_tags.php?action=delete&id=<?= htmlspecialchars($tag['tag_id']) ?>" class="btn btn-sm btn-danger">Delete</a>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
@@ -132,3 +164,5 @@
 </body>
 
 </html>
+
+

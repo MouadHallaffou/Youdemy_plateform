@@ -1,5 +1,5 @@
 -- Supprimer la base de données si elle existe
-DROP DATABASE IF EXISTS youdemy_db;
+DROP DATABASE IF EXISTS Youdemy_db;
 
 -- Créer la base de données
 CREATE DATABASE youdemy_db;
