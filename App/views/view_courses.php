@@ -1,5 +1,8 @@
 <?php
-require_once __DIR__ . '/../../../App/controllers/crud_course.php';
+require_once __DIR__ . '/../controllers/crud_course.php';
+if (!isset($coursesaccepted) || !is_array($coursesaccepted)) {
+    $coursesaccepted = [];  
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -12,14 +15,14 @@ require_once __DIR__ . '/../../../App/controllers/crud_course.php';
     <meta name="author" content="" />
     <title>Dashboard - SB Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
-    <link href="css/styles.css" rel="stylesheet" />
+    <link href="../public/dist/css/styles.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
 
 <body class="sb-nav-fixed">
 
-    <!-- includes navbar -->
-     
+    <!-- includes -->
+
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
         <!-- Navbar Brand-->
         <a class="navbar-brand ps-4" href="http://localhost/Youdemy_plateform/App/public/dist/dashboard.php"> YOUDEMY</a>
@@ -51,7 +54,7 @@ require_once __DIR__ . '/../../../App/controllers/crud_course.php';
     <div id="layoutSidenav">
 
         <?php
-        require_once 'shared/sidebar.php';
+        require_once '../public/dist/shared/sidebar.php';
         ?>
 
         <div id="layoutSidenav_content">
@@ -63,67 +66,7 @@ require_once __DIR__ . '/../../../App/controllers/crud_course.php';
                     </ol>
 
                     <div class="row">
-                        <!-- Total Users -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Utilisateurs</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <?php echo $totalUsers ?? 0; ?>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-users fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Total Students -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-warning shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                                Étudiants</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <?php echo $totalStudents ?? 0; ?>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Total Teachers -->
-                        <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-success shadow h-100 py-2">
-                                <div class="card-body">
-                                    <div class="row no-gutters align-items-center">
-                                        <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                                Enseignants</div>
-                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <?php echo $totalTeachers ?? 0; ?>
-                                            </div>
-                                        </div>
-                                        <div class="col-auto">
-                                            <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Total Courses -->
+                        <!-- Total coursesaccepted -->
                         <div class="col-xl-3 col-md-6 mb-4">
                             <div class="card border-left-danger shadow h-100 py-2">
                                 <div class="card-body">
@@ -132,7 +75,7 @@ require_once __DIR__ . '/../../../App/controllers/crud_course.php';
                                             <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
                                                 Cours</div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <?=count($courses) ?? 0; ?>
+                                                <?= count($coursesaccepted) ?? 0;?>
                                             </div>
                                         </div>
                                         <div class="col-auto">
@@ -144,7 +87,8 @@ require_once __DIR__ . '/../../../App/controllers/crud_course.php';
                         </div>
                     </div>
 
-                    <div class="row">
+
+                    <!-- <div class="row">
                         <div class="col-xl-6">
                             <div class="card mb-4">
                                 <div class="card-header">
@@ -163,7 +107,9 @@ require_once __DIR__ . '/../../../App/controllers/crud_course.php';
                                 <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
+
+
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-table me-1"></i>
@@ -173,57 +119,59 @@ require_once __DIR__ . '/../../../App/controllers/crud_course.php';
                             <table id="datatablesSimple">
                                 <thead>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Position</th>
-                                        <th>Office</th>
-                                        <th>Age</th>
-                                        <th>Start date</th>
-                                        <th>Salary</th>
+                                        <th>ID</th>
+                                        <th>Titre</th>
+                                        <th>Enseignant</th>
+                                        <th>Date</th>
+                                        <th>Catégorie</th>
+                                        <th>Tags</th>
+                                        <th>status</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Position</th>
-                                        <th>Office</th>
-                                        <th>Age</th>
-                                        <th>Start date</th>
-                                        <th>Salary</th>
+                                        <th>ID</th>
+                                        <th>Titre</th>
+                                        <th>Enseignant</th>
+                                        <th>Date</th>
+                                        <th>Catégorie</th>
+                                        <th>Tags</th>
+                                        <th>status</th>
                                     </tr>
                                 </tfoot>
                                 <tbody>
-                                    <tr>
-                                        <td>Tiger Nixon</td>
-                                        <td>System Architect</td>
-                                        <td>Edinburgh</td>
-                                        <td>61</td>
-                                        <td>2011/04/25</td>
-                                        <td>$320,800</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Garrett Winters</td>
-                                        <td>Accountant</td>
-                                        <td>Tokyo</td>
-                                        <td>63</td>
-                                        <td>2011/07/25</td>
-                                        <td>$170,750</td>
-                                    </tr>
+                                    <?php foreach ($coursesaccepted as $course): ?>
+                                        <tr>
+                                            <td><?= htmlspecialchars($course['course_id']); ?></td>
+                                            <td><?= htmlspecialchars($course['titre']); ?></td>
+                                            <td><?= htmlspecialchars('Nom de l\'enseignant');
+                                                ?></td>
+                                            <td><?= htmlspecialchars($course['date']);
+                                                ?></td>
+                                            <td><?= htmlspecialchars($course['category_name']); ?></td>
+                                            <td><?= htmlspecialchars($course['tags'] ?: 'Aucun tag'); ?></td>
+                                            <td><?= htmlspecialchars($course['status']); ?></td>
+
+                                        </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
+
+
                 </div>
             </main>
-            <?php require_once 'shared/footer.php'; ?>
+            <?php require_once '../public/dist/shared/footer.php'; ?>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="js/scripts.js"></script>
+    <script src="../public/dist/js/scripts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-    <script src="assets/demo/chart-area-demo.js"></script>
-    <script src="assets/demo/chart-bar-demo.js"></script>
+    <script src="../public/dist/assets/demo/chart-area-demo.js"></script>
+    <script src="../public/dist/assets/demo/chart-bar-demo.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
-    <script src="js/datatables-simple-demo.js"></script>
+    <script src="../public/dist/js/datatables-simple-demo.js"></script>
 </body>
 
 </html>

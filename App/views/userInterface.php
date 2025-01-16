@@ -1,3 +1,10 @@
+<?php
+use App\controllers\CourseController;
+require_once __DIR__ . '/../controllers/crud_course.php';
+if (!isset($coursesaccepted) || !is_array($coursesaccepted)) {
+    $coursesaccepted = []; 
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -46,22 +53,36 @@
 
     <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 mt-20">
         <div class="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-10">
-            <div class="border border-gray-400 bg-white rounded flex flex-col justify-between leading-normal shadow-md">
-                <div class="p-4">
-                    <iframe id="video_iframe" src="https://www.youtube.com/embed/cRsgRrsS-v0"  class="w-full h-60 rounded" frameborder="0" allowfullscreen></iframe>
-                    <a href="#" class="text-gray-900 font-bold text-lg mb-2 hover:text-indigo-600">Titre du cours</a>
-                    <p class="text-gray-700 text-sm">Description du contenu du cours ici...</p>
-                </div>
-                <div class="flex items-center p-4 border-t border-gray-300">
-                    <a href="#">
-                        <img class="w-10 h-10 rounded-full mr-4" src="https://tailwindcss.com/img/jonathan.jpg" alt="Avatar de l'enseignant">
-                    </a>
-                    <div class="text-sm">
-                        <a href="#" class="text-gray-900 font-semibold leading-none hover:text-indigo-600">Nom de l'enseignant</a>
-                        <p class="text-gray-600">Date de création du cours: 2025-01-15</p>
+            <?php foreach ($coursesaccepted as $course): ?>
+                <div class="border border-gray-400 bg-white rounded flex flex-col justify-between leading-normal shadow-md">
+                    <div class="p-4">
+                        <?php if ($course['contenu'] === 'video'): ?>
+                            <?php $embedUrl = CourseController::convertToEmbedUrl($course['video_url']); ?>
+                            <?php if ($embedUrl): ?>
+                                <iframe src="<?= htmlspecialchars($embedUrl); ?>" class="w-full h-60 rounded" frameborder="0" allowfullscreen></iframe>
+                            <?php else: ?>
+                                <p>URL de vidéo invalide.</p>
+                            <?php endif; ?>
+                        <?php elseif ($course['contenu'] === 'document'): ?>
+                            <div class="document-text">
+                                <p><?= htmlspecialchars(CourseController::truncateText($course['document_text'], 100)); ?></p>
+                                <button class="text-blue-500 hover:underline text-sm" onclick=" ">Afficher plus</button>
+                            </div>
+                        <?php endif; ?>
+                        <a href="#" class="text-gray-900 font-bold text-lg mb-2 hover:text-indigo-600"><?= htmlspecialchars($course['titre']); ?></a>
+                        <p class="text-gray-700 text-sm"><?= htmlspecialchars($course['description']); ?></p>
+                    </div>
+                    <div class="flex items-center p-4 border-t border-gray-300">
+                        <a href="#">
+                            <img class="w-10 h-10 rounded-full mr-4" src="https://tailwindcss.com/img/jonathan.jpg" alt="Avatar de l'enseignant">
+                        </a>
+                        <div class="text-sm">
+                            <a href="#" class="text-gray-900 font-semibold leading-none hover:text-indigo-600"><?= htmlspecialchars('teacher'); ?></a>
+                            <p class="text-gray-600">Date de création du cours: <?= htmlspecialchars($course['date']); ?></p>
+                        </div>
                     </div>
                 </div>
-            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 
@@ -166,7 +187,7 @@
                             placeholder="Mot de passe">
 
                         <label for="bio" class="sr-only">Bio</label>
-                        <textarea name="bio" 
+                        <textarea name="bio"
                             class="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-black focus:ring-offset-1"
                             placeholder="Votre Bio"></textarea>
 
@@ -193,31 +214,29 @@
         </div>
     </div>
 
-
-    
     <script>
-        document.getElementById("open-login-popup").addEventListener("click", function () {
+        document.getElementById("open-login-popup").addEventListener("click", function() {
             document.getElementById("login-popup").classList.remove('hidden');
             document.getElementById("signup-popup").classList.add('hidden');
         });
 
-        document.getElementById("open-signup-popup").addEventListener("click", function () {
+        document.getElementById("open-signup-popup").addEventListener("click", function() {
             document.getElementById("signup-popup").classList.remove('hidden');
             document.getElementById("login-popup").classList.add('hidden');
         });
 
-        document.getElementById("popup-close").addEventListener("click", function () {
+        document.getElementById("popup-close").addEventListener("click", function() {
             document.getElementById("login-popup").classList.add('hidden');
         });
 
-        document.getElementById("signup-close").addEventListener("click", function () {
+        document.getElementById("signup-close").addEventListener("click", function() {
             document.getElementById("signup-popup").classList.add('hidden');
         });
 
         function toggleForms() {
             const loginPopup = document.getElementById("login-popup");
             const signupPopup = document.getElementById("signup-popup");
-            
+
             if (loginPopup.classList.contains('hidden')) {
                 loginPopup.classList.remove('hidden');
                 signupPopup.classList.add('hidden');
