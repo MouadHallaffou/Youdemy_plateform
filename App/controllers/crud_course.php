@@ -1,6 +1,10 @@
 <?php
 namespace App\controllers;
+
 require_once __DIR__ . '/../../vendor/autoload.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 use App\Config\Database;
 use App\Models\Course;
@@ -24,12 +28,12 @@ class CourseController
         $videoUrl = $data['video_url'] ?? null;
         $documentText = $data['document_text'] ?? null;
         $tags = $data['tags'] ?? [];
-    
+
         try {
             if (!$title || !$description || !$categoryId || !$contentType) {
                 throw new \Exception("Tous les champs obligatoires doivent être remplis.");
             }
-    
+
             if ($contentType === 'video' && $videoUrl) {
                 $this->courseModel->insert('video', $title, $description, (int)$categoryId, $videoUrl);
             } elseif ($contentType === 'document') {
@@ -38,24 +42,23 @@ class CourseController
             } else {
                 throw new \Exception("Type de contenu ou URL de vidéo manquant.");
             }
-    
+
             $courseId = $this->courseModel->getLastInsertId();
-    
+
             if (!empty($tags)) {
                 $this->courseModel->addTagsToCourse($courseId, $tags);
             }
-    
-            header('Location: ../views/courses.php');
+
+            header('Location: ../views/teacherinterface.php');
         } catch (\Exception $e) {
             header('Location: ../views/teacherinterface.php?error=' . urlencode($e->getMessage()));
         }
         exit;
     }
-    
 
     public function editCourse(array $data): void
     {
-        $courseId = $data['id'] ?? null;
+        $courseId = $data['course_id'] ?? null;
         $title = $data['title'] ?? null;
         $description = $data['description'] ?? null;
         $categoryId = $data['category_id'] ?? null;
@@ -68,24 +71,38 @@ class CourseController
                 throw new \Exception("Tous les champs obligatoires doivent être remplis.");
             }
 
-            $this->courseModel->updateCourse($courseId, $title, $description, $contentType, $videoUrl, $documentText, (int)$categoryId);
-            
-            header('Location: ../views/courses.php');
+            $dataToUpdate = [
+                'course_id' => $courseId,
+                'title' => $title,
+                'description' => $description,
+                'category_id' => $categoryId,
+                'content_type' => $contentType,
+                'video_url' => $videoUrl ?? null,
+                'document_text' => $documentText ?? null
+            ];
+
+            $this->courseModel->updateCourse($dataToUpdate);
+
+            if (!$this->courseModel->updateCourse($dataToUpdate)) {
+                echo "La mise à jour a échoué.";
+            }
+            header('Location: ../views/editCourse.php');
         } catch (\Exception $e) {
-            header('Location: ../views/courses.php?error=' . urlencode($e->getMessage()));
+            header('Location: ../views/editCourse.php?error=' . urlencode($e->getMessage()));
         }
         exit;
     }
 
-
-    public function handleRequest(): void {
+    public function handleRequest(): void
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST['action']) && $_POST['action'] === 'create') {
                 $this->createCourse($_POST);
-            }elseif (isset($_POST['action']) && $_POST['action'] === 'edit') { 
-                $this->editCourse($_POST); 
+            } elseif (isset($_POST['action']) && $_POST['action'] === 'edit') {
+                $this->editCourse($_POST);
             }
         }
+
         if (isset($_GET['action'])) {
             if ($_GET['action'] === 'accept' && isset($_GET['id'])) {
                 $this->courseModel->updateCourseStatus((int)$_GET['id'], 'accepte');
@@ -93,16 +110,14 @@ class CourseController
                 exit;
             } elseif ($_GET['action'] === 'refuse' && isset($_GET['id'])) {
                 $this->courseModel->updateCourseStatus((int)$_GET['id'], 'refuse');
-                header('Location: http://localhost/Youdemy_plateform/App/views/manage_courses.php'); 
+                header('Location: http://localhost/Youdemy_plateform/App/views/manage_courses.php');
                 exit;
-            }elseif ($_GET['action'] === 'delete' && isset($_GET['id'])) {
-                $this->courseModel->deleteCourse((int)$_GET['id']); 
-                header('Location: http://localhost/Youdemy_plateform/App/views/manage_courses.php'); 
+            } elseif ($_GET['action'] === 'delete' && isset($_GET['id'])) {
+                $this->courseModel->deleteCourse((int)$_GET['id']);
+                header('Location: http://localhost/Youdemy_plateform/App/views/teacher_manage_course.php');
                 exit;
             }
         }
-
-
     }
 
     public function getCourses(): array
@@ -116,14 +131,16 @@ class CourseController
     }
 
 
-    public static function truncateText($text, $maxLength = 300) {
+    public static function truncateText($text, $maxLength = 300)
+    {
         if (strlen($text) > $maxLength) {
             return substr($text, 0, $maxLength) . '...';
         }
         return $text;
     }
 
-    public static function convertToEmbedUrl($url) {
+    public static function convertToEmbedUrl($url)
+    {
         $videoId = null;
 
         if (preg_match('/[?&]v=([^&]+)/', $url, $matches)) {
@@ -134,7 +151,6 @@ class CourseController
 
         return $videoId ? "https://www.youtube.com/embed/$videoId" : null;
     }
-
 }
 
 
@@ -143,4 +159,3 @@ $controller = new CourseController($pdo);
 $controller->handleRequest();
 $courses = $controller->getCourses();
 $coursesaccepted = $controller->getCoursesAcetpted();
-

@@ -51,7 +51,7 @@ class UsersController
                     if ($role === 'enseignant') {
                         header("Location: http://localhost/Youdemy_plateform/App/views/teacherinterface.php");
                     } else {
-                        header("Location: http://localhost/Youdemy_plateform/App/views/studentinterface.php");
+                        header("Location: http://localhost/Youdemy_plateform/App/views/userInterface.php");
                     }
                     exit();
                 } else {
@@ -160,13 +160,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_id'] = $user['user_id'];
             $_SESSION['user_name'] = $user['name'];
             $_SESSION['user_role'] = $user['role'];
+            $_SESSION['image_url'] = $user['image_url'];
 
             if ($user['role'] === 'etudiant') {
                 header('Location: ../../index.php');
             } elseif ($user['role'] === 'enseignant') {
+                header('Location: ../views/teacherinterface.php');
+            } elseif ($user['role'] === 'admin') {
+                header('Location: http://localhost/Youdemy_plateform/App/public/dist/dashboard.php');
+            }else {
                 header('Location: ../../index.php');
-            } else {
-                header('Location: /Youdemy_plateform/App/views/admininterface.php');
             }
             exit();
         } else {
