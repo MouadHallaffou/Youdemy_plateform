@@ -23,12 +23,12 @@ abstract class User {
         $this->imageUrl = filter_var($imageUrl, FILTER_VALIDATE_URL); 
         $this->pdo = Database::connect(); 
     }
+    
+    abstract public function save();
 
     public function hashPassword(string $password): string {
         return password_hash($password, PASSWORD_BCRYPT);
     }
-
-    abstract public function save();
 
     public function login($email, $password): bool {
         $query = "SELECT * FROM users WHERE email = :email LIMIT 1";
@@ -43,6 +43,7 @@ abstract class User {
             $_SESSION['user_email'] = $user['email'];
             $_SESSION['user_role'] = $user['role'];
             $_SESSION['user_status'] = $user['status'];
+            $_SESSION['image_url'] = $user['image_url'];
 
             return true;
         }
@@ -50,9 +51,11 @@ abstract class User {
         return false;
     }
 
-    // Méthode pour déconnecter l'utilisateur
+    // Methode logout
     public static function logout() {
-        session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
         session_unset();
         session_destroy();
     }
