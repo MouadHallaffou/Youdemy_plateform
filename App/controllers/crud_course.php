@@ -47,7 +47,7 @@ class CourseController
     
             header('Location: ../views/courses.php');
         } catch (\Exception $e) {
-            header('Location: ../views/courses.php?error=' . urlencode($e->getMessage()));
+            header('Location: ../views/teacherinterface.php?error=' . urlencode($e->getMessage()));
         }
         exit;
     }
@@ -116,7 +116,7 @@ class CourseController
     }
 
 
-    public static function truncateText($text, $maxLength = 100) {
+    public static function truncateText($text, $maxLength = 300) {
         if (strlen($text) > $maxLength) {
             return substr($text, 0, $maxLength) . '...';
         }

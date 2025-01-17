@@ -40,7 +40,6 @@ class TagController {
         }
     }
 
-    // A method to handle incoming requests
     public function handleRequest(): void {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isset($_POST['tag_name'])) {
@@ -62,9 +61,7 @@ class TagController {
 }
 
 $tagController = new TagController($pdo);
-
 $tagController->handleRequest();
-
 $tags = $tagController->displayTags();
 
 
