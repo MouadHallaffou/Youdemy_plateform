@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../../vendor/autoload.php';
-
 use App\Config\Database;
 use App\Models\Category;
 use App\Models\Tag;
@@ -58,12 +57,15 @@ $tags = $tagModel->getAllTags();
         </div>
 
         <div class="lg:flex items-center">
+
             <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="add-course-button">
                 Ajouter un Cours
             </button>
-            <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600">
+
+            <a href="teacher_manage_course.php" class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600">
                 Mes Cours
-            </button>
+            </a>
+
             <button class="py-1.5 px-3 m-1 text-center bg-red-700 border rounded-md text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600">
                 Déconnexion
             </button>
@@ -122,7 +124,7 @@ $tags = $tagModel->getAllTags();
                             <div class="mb-4">
                                 <label for="category" class="block text-gray-700 font-semibold mb-2">Catégorie :</label>
                                 <select id="category" name="category_id" required class="border border-gray-300 rounded-lg p-2 w-full focus:outline-none focus:ring-2 focus:ring-violet-500">
-                                    <option value="">-- Sélectionnez une catégorie --</option>
+                                    <option value="">Sélectionnez une catégorie</option>
                                     <?php if (!empty($categories)): ?>
                                         <?php foreach ($categories as $category): ?>
                                             <option value="<?= htmlspecialchars($category['category_id']) ?>">

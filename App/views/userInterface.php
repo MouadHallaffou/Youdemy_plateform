@@ -1,9 +1,14 @@
 <?php
 use App\controllers\CourseController;
+
 require_once __DIR__ . '/../controllers/crud_course.php';
 if (!isset($coursesaccepted) || !is_array($coursesaccepted)) {
-    $coursesaccepted = []; 
+    $coursesaccepted = [];
 }
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -28,26 +33,44 @@ if (!isset($coursesaccepted) || !is_array($coursesaccepted)) {
             YOUDEMY
         </a>
 
-        <div class="lg:hidden">
-            <button class="navbar-burger flex items-center text-violet-600 dark:text-gray-100 p-1" id="navbar_burger">
-                <i class="fas fa-bars h-6 w-6"></i>
-            </button>
-        </div>
-
         <div class="relative mx-auto hidden lg:block">
             <input class="border border-gray-300 placeholder-current h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none dark:bg-gray-500 dark:border-gray-50 dark:text-gray-200" type="search" name="search" placeholder="Search">
             <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
                 <i class="fas fa-search text-gray-600 dark:text-gray-200 h-4 w-4"></i>
             </button>
         </div>
-
+<!-- <pre>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+print_r($_SESSION);
+?>
+</pre> -->
         <div class="lg:flex items-center">
-            <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="open-login-popup">
-                Login
-            </button>
-            <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="open-signup-popup">
-                Sign up
-            </button>
+            <?php if (isset($_SESSION['username'])): ?>
+                <!-- Affichage pour un utilisateur connecté -->
+                
+
+                <div class="flex items-center gap-4">
+                    <span class="text-gray-700 dark:text-gray-200 font-medium">
+                        Bienvenue, <a href="/profile" class="text-white"><?= htmlspecialchars($_SESSION['username']) ?></a>
+                    </span>
+                    <form action="/logout.php" method="POST">
+                        <button type="submit" class="py-1.5 px-3 text-center bg-red-600 border rounded-md text-white hover:bg-red-500 dark:bg-red-600 dark:hover:bg-red-500">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            <?php else: ?>
+                <!-- Affichage pour un utilisateur non connecté -->
+                <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="open-login-popup">
+                    Login
+                </button>
+                <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="open-signup-popup">
+                    Sign up
+                </button>
+            <?php endif; ?>
         </div>
     </nav>
 
@@ -60,12 +83,13 @@ if (!isset($coursesaccepted) || !is_array($coursesaccepted)) {
                             <?php $embedUrl = CourseController::convertToEmbedUrl($course['video_url']); ?>
                             <?php if ($embedUrl): ?>
                                 <iframe src="<?= htmlspecialchars($embedUrl); ?>" class="w-full h-60 rounded" frameborder="0" allowfullscreen></iframe>
+                                <!-- <?php var_dump($embedUrl); ?> -->
                             <?php else: ?>
                                 <p>URL de vidéo invalide.</p>
                             <?php endif; ?>
                         <?php elseif ($course['contenu'] === 'document'): ?>
                             <div class="document-text">
-                                <p><?= htmlspecialchars(CourseController::truncateText($course['document_text'], 100)); ?></p>
+                                <p><?= htmlspecialchars(CourseController::truncateText($course['document_text'], 300)); ?></p>
                                 <button class="text-blue-500 hover:underline text-sm" onclick=" ">Afficher plus</button>
                             </div>
                         <?php endif; ?>
@@ -120,17 +144,19 @@ if (!isset($coursesaccepted) || !is_array($coursesaccepted)) {
         class="bg-black/50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 h-full items-center justify-center flex hidden">
         <div class="relative p-4 w-full max-w-md h-full md:h-auto">
             <div class="relative bg-white rounded-lg shadow">
-                <button type="button"
-                    class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" id="popup-close">
-                    <i class="fas fa-times"></i>
-                    <span class="sr-only">Close popup</span>
-                </button>
 
                 <div class="p-5">
                     <h3 class="text-2xl mb-3 font-medium">Connexion</h3>
                     <p class="mb-4 text-sm font-normal text-gray-800">Entrez vos identifiants pour vous connecter.</p>
 
-                    <form id="login-form">
+                    <form id="login-form" action="../../../Youdemy_plateform/App/controllers/crud_users.php" method="POST">
+
+                        <button type="reset"
+                            class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" id="popup-close">
+                            <i class="fas fa-times"></i>
+                            <span class="sr-only">Close popup</span>
+                        </button>
+
                         <label for="login-email" class="sr-only">Email address</label>
                         <input name="email" type="email" required
                             class="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-black focus:ring-offset-1"
@@ -152,6 +178,7 @@ if (!isset($coursesaccepted) || !is_array($coursesaccepted)) {
                         <a href="#" class="font-medium text-[#4285f4]" onclick="toggleForms(); return false;">Inscrivez-vous ici</a>
                     </div>
                 </div>
+                
             </div>
         </div>
     </div>
@@ -161,16 +188,16 @@ if (!isset($coursesaccepted) || !is_array($coursesaccepted)) {
         class="bg-black/50 overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 h-full items-center justify-center flex hidden">
         <div class="relative p-4 w-full max-w-md h-full md:h-auto">
             <div class="relative bg-white rounded-lg shadow">
-                <button type="button"
-                    class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" id="signup-close">
-                    <i class="fas fa-times"></i>
-                    <span class="sr-only">Close popup</span>
-                </button>
-
                 <div class="p-5">
                     <h3 class="text-2xl mb-3 font-medium">Créer un compte</h3>
+                    <form id="signup-form" action="../../../Youdemy_plateform/App/controllers/crud_users.php" method="POST">
 
-                    <form id="signup-form">
+                        <button type="reset"
+                            class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" id="signup-close">
+                            <i class="fas fa-times"></i>
+                            <span class="sr-only">Close popup</span>
+                        </button>
+
                         <label for="username" class="sr-only">Nom d'utilisateur</label>
                         <input name="username" type="text" required
                             class="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-black focus:ring-offset-1"
@@ -191,15 +218,20 @@ if (!isset($coursesaccepted) || !is_array($coursesaccepted)) {
                             class="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-black focus:ring-offset-1"
                             placeholder="Votre Bio"></textarea>
 
+                        <label for="image_url" class="sr-only">URL de l'image</label>
+                        <input name="image_url" type="url"
+                            class="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-black focus:ring-offset-1"
+                            placeholder="https://example.com/image.jpg" required>
+
                         <label for="role" class="sr-only">Rôle</label>
                         <select name="role" required
                             class="block w-full rounded-lg border border-gray-300 px-3 py-2 mt-2 outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-black focus:ring-offset-1">
-                            <option value="">-- Choisir un rôle --</option>
-                            <option value="etudiant">Étudiant</option>
+                            <option value=""> Choisir un role </option>
+                            <option value="etudiant">Etudiant</option>
                             <option value="enseignant">Enseignant</option>
                         </select>
 
-                        <button type="submit"
+                        <button type="submit" name="addUser"
                             class="mt-4 inline-flex w-full items-center justify-center rounded-lg bg-black p-2 py-3 text-sm font-medium text-white outline-none focus:ring-2 focus:ring-black focus:ring-offset-1">
                             Créer un compte
                         </button>

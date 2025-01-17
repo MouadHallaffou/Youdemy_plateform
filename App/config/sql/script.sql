@@ -12,8 +12,9 @@ CREATE TABLE users (
     email VARCHAR(250) NOT NULL UNIQUE,
     password VARCHAR(250) NOT NULL,
     bio VARCHAR(250),
+    image_url VARCHAR(255),
     role ENUM('etudiant', 'enseignant', 'admin') NOT NULL,
-    status ENUM('active', 'suspended') DEFAULT 'active',
+    status ENUM('active', 'suspended' , 'pending') NOT NULL,
     PRIMARY KEY (user_id)
 );
 

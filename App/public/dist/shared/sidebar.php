@@ -32,8 +32,8 @@
                 </a>
                 <div class="collapse" id="collapseTeachers" aria-labelledby="headingTeachers" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link" href="total-teachers.php">Voir total</a>
-                        <a class="nav-link" href="validate-teachers.php">Valider les enseignants</a>
+                        <a class="nav-link" href="http://localhost/Youdemy_plateform/App/views/total-teachers.php">Total enseignants</a>
+                        <a class="nav-link" href="http://localhost/Youdemy_plateform/App/views/validate-teachers.php">Valider les enseignants</a>
                     </nav>
                 </div>
 
