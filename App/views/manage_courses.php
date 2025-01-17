@@ -145,7 +145,7 @@ if (!isset($courses) || !is_array($courses)) {
                                         <tr>
                                             <td><?= htmlspecialchars($course['course_id']); ?></td>
                                             <td><?= htmlspecialchars($course['titre']); ?></td>
-                                            <td><?= htmlspecialchars('Nom de l\'enseignant');
+                                            <td><?= htmlspecialchars($course['name']);
                                                 ?></td>
                                             <td><?= htmlspecialchars($course['date']);
                                                 ?></td>

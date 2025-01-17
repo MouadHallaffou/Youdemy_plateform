@@ -1,3 +1,21 @@
+<?php
+require_once __DIR__ . '/../../vendor/autoload.php';
+use App\Config\Database;
+use App\models\Course;
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+$teacherId = $_SESSION['user_id']; 
+$pdo = Database::connect();
+$courseModel = new Course($pdo);
+$courses = $courseModel->getCoursesTeacher($_SESSION['user_name']);
+if (!is_array($courses)) {
+    $courses = []; 
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -24,22 +42,27 @@
                 </tr>
             </thead>
             <tbody>
+                <?php foreach($courses as $course) :?>
                 <tr>
-                    <td class="border px-4 py-2">1</td>
-                    <td class="border px-4 py-2">boite</td>
-                    <td class="border px-4 py-2">video</td>
-                    <td class="border px-4 py-2">soumis</td>
-                    <td class="border px-4 py-2">front</td>
+                    <td class="border px-4 py-2"><?= htmlspecialchars($course['course_id'])?></td>
+                    <td class="border px-4 py-2"><?= htmlspecialchars($course['titre'])?></td>
+                    <td class="border px-4 py-2"><?= htmlspecialchars($course['contenu'])?></td>
+                    <td class="border px-4 py-2"><?= htmlspecialchars($course['status'])?></td>
+                    <td class="border px-4 py-2"><?= htmlspecialchars($course['category_name'])?></td>
                     <td class="border px-4 py-2">
-                        <button type="button"
-                            class="mr-3 text-sm bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Edit</button>
-                        <button type="button"
-                            class="text-sm bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Delete</button>
+                    <a href="editCourse.php?id=<?= htmlspecialchars($course['course_id']) ?>"
+                    class="mr-3 text-sm bg-blue-500 hover:bg-blue-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Edit</a>
+                        <a href="../controllers/crud_course.php?action=delete&id=<?= htmlspecialchars($course['course_id']) ?>" onclick = "return confirm('are you sure de suprimmer ce cour ?');"
+                        class="text-sm bg-red-500 hover:bg-red-700 text-white py-1 px-2 rounded focus:outline-none focus:shadow-outline">Delete</a>
                     </td>
                 </tr>
-
+                <?php endforeach ;?>
             </tbody>
         </table>
+        <a href="teacherinterface.php" 
+            class="mb-4 text-white bg-gray-500 hover:bg-gray-700 py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        Retour à la page précédente
+        </a>
     </div>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>

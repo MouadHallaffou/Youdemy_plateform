@@ -39,28 +39,17 @@ if (session_status() === PHP_SESSION_NONE) {
                 <i class="fas fa-search text-gray-600 dark:text-gray-200 h-4 w-4"></i>
             </button>
         </div>
-<!-- <pre>
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-print_r($_SESSION);
-?>
-</pre> -->
-        <div class="lg:flex items-center">
-            <?php if (isset($_SESSION['username'])): ?>
-                <!-- Affichage pour un utilisateur connecté -->
-                
 
+        <div class="lg:flex items-center">
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <!-- Affichage pour un utilisateur connecté -->
                 <div class="flex items-center gap-4">
                     <span class="text-gray-700 dark:text-gray-200 font-medium">
-                        Bienvenue, <a href="/profile" class="text-white"><?= htmlspecialchars($_SESSION['username']) ?></a>
+                        Bienvenue, <a href="/profile" class="text-white"><?= htmlspecialchars($_SESSION['user_name']) ?></a>
                     </span>
-                    <form action="/logout.php" method="POST">
-                        <button type="submit" class="py-1.5 px-3 text-center bg-red-600 border rounded-md text-white hover:bg-red-500 dark:bg-red-600 dark:hover:bg-red-500">
-                            Logout
-                        </button>
-                    </form>
+                    <a href="../../../Youdemy_plateform/App/controllers/logout.php" class="py-1.5 px-3 text-center bg-red-600 border rounded-md text-white hover:bg-red-500 dark:bg-red-600 dark:hover:bg-red-500">
+                        Logout
+                    </a>
                 </div>
             <?php else: ?>
                 <!-- Affichage pour un utilisateur non connecté -->
@@ -101,7 +90,7 @@ print_r($_SESSION);
                             <img class="w-10 h-10 rounded-full mr-4" src="https://tailwindcss.com/img/jonathan.jpg" alt="Avatar de l'enseignant">
                         </a>
                         <div class="text-sm">
-                            <a href="#" class="text-gray-900 font-semibold leading-none hover:text-indigo-600"><?= htmlspecialchars('teacher'); ?></a>
+                            <a href="#" class="text-gray-900 font-semibold leading-none hover:text-indigo-600"><?= htmlspecialchars($course['user_name']); ?></a>
                             <p class="text-gray-600">Date de création du cours: <?= htmlspecialchars($course['date']); ?></p>
                         </div>
                     </div>

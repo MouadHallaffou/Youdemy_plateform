@@ -1,8 +1,10 @@
 <?php
 require_once __DIR__ . '/../../vendor/autoload.php';
+
 use App\Config\Database;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Models\Course;
 
 $pdo = Database::connect();
 $categoryModel = new Category($pdo);
@@ -10,7 +12,33 @@ $tagModel = new Tag($pdo);
 
 $categories = $categoryModel->getAllCategories();
 $tags = $tagModel->getAllTags();
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (isset($_SESSION['user_id'])) {
+    $userId = $_SESSION['user_id'];
+
+    $sql = "SELECT * FROM users WHERE user_id = :user_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':user_id' => $userId]);
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($user) {
+        $teacherName = $_SESSION['user_name'];
+    } 
+} 
+
+$courseModel = new Course($pdo);
+$courses = $courseModel->getCoursesTeacher($_SESSION['user_name']);
+if (!is_array($courses)) {
+    $courses = []; 
+}
+
 ?>
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -24,6 +52,7 @@ $tags = $tagModel->getAllTags();
         .hidden {
             display: none;
         }
+
         .modal {
             position: absolute;
             top: 4rem;
@@ -57,6 +86,8 @@ $tags = $tagModel->getAllTags();
         </div>
 
         <div class="lg:flex items-center">
+            <!-- le nom de enseignant -->
+            <span class="text-white text-lg mr-4">Bienvenue, <?php echo htmlspecialchars($teacherName); ?></span>
 
             <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="add-course-button">
                 Ajouter un Cours
@@ -66,20 +97,21 @@ $tags = $tagModel->getAllTags();
                 Mes Cours
             </a>
 
-            <button class="py-1.5 px-3 m-1 text-center bg-red-700 border rounded-md text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600">
+            <a href="../../../Youdemy_plateform/App/controllers/logout.php" class="py-1.5 px-3 m-1 text-center bg-red-700 border rounded-md text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600">
                 Déconnexion
-            </button>
+            </a>
         </div>
+
     </nav>
 
     <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 mt-20">
         <!-- Section des cartes de cours -->
         <div class="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-10">
-            <?php foreach ($categories as $category):?>
+            <?php foreach ($courses as $course): ?>
                 <div class="border border-gray-400 bg-white rounded flex flex-col justify-between leading-normal shadow-md">
                     <div class="p-4">
                         <iframe id="video_iframe" src="https://www.youtube.com/embed/VKqZNPG4o_4" class="w-full h-60 rounded" frameborder="0" allowfullscreen></iframe>
-                        <a href="#" class="text-gray-900 font-bold text-lg mb-2 hover:text-indigo-600"><?= htmlspecialchars($category['name']); ?></a>
+                        <a href="#" class="text-gray-900 font-bold text-lg mb-2 hover:text-indigo-600"><?= htmlspecialchars($course['titre']); ?></a>
                         <p class="text-gray-700 text-sm">Description du contenu du cours ici...</p>
                     </div>
                     <div class="flex items-center p-4 border-t border-gray-300">
@@ -87,7 +119,7 @@ $tags = $tagModel->getAllTags();
                             <img class="w-10 h-10 rounded-full mr-4" src="https://tailwindcss.com/img/jonathan.jpg" alt="Avatar de l'enseignant">
                         </a>
                         <div class="text-sm">
-                            <a href="#" class="text-gray-900 font-semibold leading-none hover:text-indigo-600">Nom de l'enseignant</a>
+                            <a href="#" class="text-gray-900 font-semibold leading-none hover:text-indigo-600"><?= htmlspecialchars($course['user_name']);?></a>
                             <p class="text-gray-600">Date de création du cours: 2025-01-15</p>
                         </div>
                         <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600">
@@ -215,11 +247,11 @@ $tags = $tagModel->getAllTags();
             document.getElementById('document_file').classList.toggle('hidden', type !== 'document');
         }
 
-        document.getElementById("add-course-button").addEventListener("click", function () {
+        document.getElementById("add-course-button").addEventListener("click", function() {
             document.getElementById("add-course-form").classList.toggle('hidden');
         });
 
-        document.getElementById("form-close").addEventListener("click", function () {
+        document.getElementById("form-close").addEventListener("click", function() {
             document.getElementById("add-course-form").classList.add('hidden');
         });
     </script>
