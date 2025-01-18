@@ -1,10 +1,5 @@
 <?php
-
 namespace App\Models;
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 
 use PDO;
 use Exception;
@@ -182,7 +177,7 @@ class Course
 
     public function getAcceptedCourses(): array
     {
-        $sql = "SELECT c.course_id, c.titre, c.date_status As date, c.description,c.status, u.name As user_name,
+        $sql = "SELECT c.course_id, c.titre, DATE(c.date_status) As date, c.description,c.status,u.image_url, u.name As user_name,
                 c.contenu, c.video_url, c.document_text,cat.name AS category_name,
                 GROUP_CONCAT(t.name SEPARATOR ' ') AS tags
                 FROM courses c

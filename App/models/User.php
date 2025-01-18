@@ -1,6 +1,6 @@
 <?php
 namespace App\Models;
-require_once __DIR__ . '/../../vendor/autoload.php';
+
 use App\Config\Database;
 
 abstract class User {
@@ -16,14 +16,14 @@ abstract class User {
 
     public function __construct(string $name, string $email, string $password, string $bio = '', string $status = 'active', string $imageUrl = '') {
         $this->name = $name;
-        $this->email = $email;
+        $this->setEmail($email); // Appel à la méthode setEmail
         $this->password = $this->hashPassword($password);
         $this->bio = $bio;
         $this->status = $status;
-        $this->imageUrl = filter_var($imageUrl, FILTER_VALIDATE_URL); 
-        $this->pdo = Database::connect(); 
+        $this->imageUrl = filter_var($imageUrl, FILTER_VALIDATE_URL);
+        $this->pdo = Database::connect();
     }
-    
+
     abstract public function save();
 
     public function hashPassword(string $password): string {
@@ -51,7 +51,14 @@ abstract class User {
         return false;
     }
 
-    // Methode logout
+    // Méthode pour valider l'email
+    protected function setEmail(string $email): void {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new \InvalidArgumentException("L'email fourni n'est pas valide.");
+        }
+        $this->email = $email;
+    }
+
     public static function logout() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -59,5 +66,8 @@ abstract class User {
         session_unset();
         session_destroy();
     }
+
+    abstract public function searchByTitle(array $courses, string $title): array;
+    
 }
 
