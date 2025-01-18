@@ -15,6 +15,7 @@ CREATE TABLE users (
     image_url VARCHAR(255),
     role ENUM('etudiant', 'enseignant', 'admin') NOT NULL,
     status ENUM('active', 'suspended' , 'pending') NOT NULL,
+    isActive BOOLEAN NOT NULL DEFAULT TRUE,
     PRIMARY KEY (user_id)
 );
 

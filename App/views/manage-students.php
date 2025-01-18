@@ -1,13 +1,11 @@
 <?php
-require_once __DIR__ . '../../../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../controllers/crud_users.php';
 
-use App\Config\Database;
-use App\Models\Tag;
+use App\Controllers\UsersController;
 
-$pdo = Database::connect();
-$tagModel = new Tag($pdo);
-$tags = $tagModel->getAllTags();
-$totaltags = count($tags);
+$controller = new UsersController();
+$students = $controller->getStudents();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,6 +26,7 @@ $totaltags = count($tags);
 
     <?php require_once __DIR__ . './../public/dist/shared/topbar.php'; ?>
 
+
     <div id="layoutSidenav">
 
         <?php
@@ -42,40 +41,21 @@ $totaltags = count($tags);
                         <li class="breadcrumb-item active"></li>
                     </ol>
 
-                    <div class="modal show" id="addtagModal" tabindex="-1" aria-labelledby="addtagModalLabel" aria-hidden="true" style="display: block;">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="addtagModalLabel">Ajouter une Tags</h5>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="../controllers/crud_tags.php" method="POST">
-                                        <div class="mb-3">
-                                            <label for="tag_name" class="form-label">Nom de tags</label>
-                                            <input type="text" class="form-control" id="tag_name" name="tag_name" required>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary">Ajouter</button>
-                                        <a href="../public/dist/dashboard.php" class="btn btn-secondary">Annuler</a>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mt-4">
+                    <div class="row">
+                        <!-- Total Students -->
                         <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card border-left-warning shadow h-100 py-2">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                                Total Tags</div>
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Étudiants</div>
                                             <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                                <?= count($tags) ?? 0; ?>
+                                                <?= count($students) ?? 0; ?>
                                             </div>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fas fa-tags fa-2x text-gray-300"></i>
+                                            <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -93,38 +73,48 @@ $totaltags = count($tags);
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>NAME</th>
-                                        <th>ACTIONS</th>
+                                        <th>name</th>
+                                        <th>email</th>
+                                        <th>status</th>
+                                        <th>nbr cours</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
                                     <tr>
                                         <th>ID</th>
-                                        <th>NAME</th>
-                                        <th>ACTIONS</th>
+                                        <th>name</th>
+                                        <th>email</th>
+                                        <th>status</th>
+                                        <th>nbr cours</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </tfoot>
                                 <tbody>
-                                    <?php if (!empty($tags)): ?>
-                                        <?php foreach ($tags as $tag): ?>
-                                            <tr>
-                                                <td><?= htmlspecialchars($tag['tag_id']) ?></td>
-                                                <td><?= htmlspecialchars($tag['name']) ?></td>
-                                                <td>
-                                                    <a href="../views/edit_tag.php?action=edit&id=<?= htmlspecialchars($tag['tag_id']) ?>" class="btn btn-sm btn-primary">Edit</a>
-                                                    <a href="../controllers/crud_tags.php?action=delete&id=<?= htmlspecialchars($tag['tag_id']) ?>" class="btn btn-sm btn-danger">Delete</a>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
+                                    <?php foreach ($students as $student): ?>
                                         <tr>
-                                            <td colspan="3">Aucun Tag disponible.</td>
+                                            <td><?= htmlspecialchars($student['user_id']); ?></td>
+                                            <td><?= htmlspecialchars($student['name']); ?></td>
+                                            <td><?= htmlspecialchars($student['email']); ?></td>
+                                            <td><?= htmlspecialchars($student['status']); ?></td>
+                                            <td><?= htmlspecialchars('0'); ?></td>
+                                            <td>
+                                                <a href="../controllers/crud_users.php?action=active&id=<?= htmlspecialchars($student['user_id']) ?>" class="btn btn-sm btn-success">
+                                                    <i class="fas fa-check"></i> active
+                                                </a>
+                                                <a href="../controllers/crud_users.php?action=suspend&id=<?= htmlspecialchars($student['user_id']) ?>" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-times"></i> suspend
+                                                </a>
+                                            </td>
+
                                         </tr>
-                                    <?php endif; ?>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
+
+
                 </div>
             </main>
             <?php require_once '../public/dist/shared/footer.php'; ?>

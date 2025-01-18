@@ -27,14 +27,32 @@ if (isset($_SESSION['user_id'])) {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {
-        $teacherName = $_SESSION['user_name'];
-    } 
-} 
+        // Vérifie si le nom d'utilisateur est défini dans la session
+        if (isset($_SESSION['user_name'])) {
+            $teacherName = $_SESSION['user_name'];
+        } else {
+            // Si le nom d'utilisateur n'est pas défini, utilise le nom récupéré dans la base de données
+            $teacherName = $user['name'];
+            $_SESSION['user_name'] = $teacherName;  // Optionnellement, tu peux définir cette valeur dans la session
+        }
+    }
+} else {
+    // Gérer le cas où l'utilisateur n'est pas connecté
+    echo "Utilisateur non connecté.";
+}
 
-$courseModel = new Course($pdo);
-$courses = $courseModel->getCoursesTeacher($_SESSION['user_name']);
-if (!is_array($courses)) {
-    $courses = []; 
+if (isset($teacherName)) {
+    // Passe le nom de l'enseignant à la méthode de récupération des cours
+    $courseModel = new Course($pdo);
+    $courses = $courseModel->getCoursesTeacher($teacherName);
+
+    // Si aucun cours n'est trouvé, initialise un tableau vide
+    if (!is_array($courses)) {
+        $courses = [];
+    }
+} else {
+    // Gérer le cas où $teacherName n'est pas défini
+    $courses = [];
 }
 
 ?>
@@ -72,12 +90,6 @@ if (!is_array($courses)) {
             YOUDEMY
         </a>
 
-        <div class="lg:hidden">
-            <button class="navbar-burger flex items-center text-violet-600 dark:text-gray-100 p-1" id="navbar_burger">
-                <i class="fas fa-bars h-6 w-6"></i>
-            </button>
-        </div>
-
         <div class="relative mx-auto hidden lg:block">
             <input class="border border-gray-300 placeholder-current h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none dark:bg-gray-500 dark:border-gray-50 dark:text-gray-200" type="search" name="search" placeholder="Recherche...">
             <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
@@ -85,21 +97,36 @@ if (!is_array($courses)) {
             </button>
         </div>
 
-        <div class="lg:flex items-center">
-            <!-- le nom de enseignant -->
-            <span class="text-white text-lg mr-4">Bienvenue, <?php echo htmlspecialchars($teacherName); ?></span>
+        <div class="lg:flex items-center relative">
 
-            <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="add-course-button">
-                Ajouter un Cours
-            </button>
+            <div class="flex items-center">
+                <span class="text-white text-lg font-semibold px-1"><?php echo htmlspecialchars($teacherName ?? '')  ; ?></span>
+                <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden mr-3">
+                <img src="<?= htmlspecialchars($user['image_url'] ?? 'https://cdn.sofifa.net/players/209/981/25_120.png'); ?>" alt="Profil" class="w-full h-full object-cover">
+                </div>
+            </div>
 
-            <a href="teacher_manage_course.php" class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600">
-                Mes Cours
-            </a>
+            <div class="ml-auto lg:hidden">
+                <button id="hamburger-menu" class="text-white focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
+            </div>
 
-            <a href="../../../Youdemy_plateform/App/controllers/logout.php" class="py-1.5 px-3 m-1 text-center bg-red-700 border rounded-md text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600">
-                Déconnexion
-            </a>
+            <div id="menu-items" class="lg:flex items-center hidden lg:ml-4 flex-col lg:flex-row bg-gray-800 lg:bg-transparent p-4 lg:p-0 absolute lg:relative top-12 lg:top-0 right-0 lg:right-auto w-48 lg:w-auto rounded-md shadow-lg lg:shadow-none">
+                <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="add-course-button">
+                    Ajouter un Cours
+                </button>
+
+                <a href="teacher_manage_course.php" class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600">
+                    Mes Cours
+                </a>
+
+                <a href="../../../Youdemy_plateform/App/controllers/logout.php" class="py-1.5 px-3 m-1 text-center bg-red-700 border rounded-md text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600">
+                    Déconnexion
+                </a>
+            </div>
         </div>
 
     </nav>
@@ -119,7 +146,7 @@ if (!is_array($courses)) {
                             <img class="w-10 h-10 rounded-full mr-4" src="https://tailwindcss.com/img/jonathan.jpg" alt="Avatar de l'enseignant">
                         </a>
                         <div class="text-sm">
-                            <a href="#" class="text-gray-900 font-semibold leading-none hover:text-indigo-600"><?= htmlspecialchars($course['user_name']);?></a>
+                            <a href="#" class="text-gray-900 font-semibold leading-none hover:text-indigo-600"><?= htmlspecialchars($course['user_name']); ?></a>
                             <p class="text-gray-600">Date de création du cours: 2025-01-15</p>
                         </div>
                         <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600">
@@ -211,17 +238,17 @@ if (!is_array($courses)) {
         </div>
     </div>
 
-    <footer class="bg-sky-800">
-        <div class="mx-auto max-w-7xl py-8 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
+    <footer class="bg-sky-800 rounded-lg">
+        <div class="mx-auto max-w-7xl py-4 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
             <nav class="-mx-5 -my-2 flex flex-wrap justify-center order-2" aria-label="Footer">
                 <div class="px-5">
-                    <a href="#" class="text-base text-white hover:text-gray-200">Conditions d'utilisation</a>
+                    <a href="#" class="text-base text-white hover:text-gray-200">Terms of Service</a>
                 </div>
                 <div class="px-5">
-                    <a href="#" class="text-base text-white hover:text-gray-200">Politique de confidentialité</a>
+                    <a href="#" class="text-base text-white hover:text-gray-200">Privacy Policy</a>
                 </div>
             </nav>
-            <div class="mt-8 md:mb-8 flex justify-center space-x-6 md:order-3">
+            <div class="mt-4 md:mb-0 flex justify-center space-x-6 md:order-3">
                 <a href="#" class="text-white hover:text-gray-200">
                     <i class="fab fa-facebook h-6 w-6"></i>
                 </a>
@@ -232,7 +259,7 @@ if (!is_array($courses)) {
                     <i class="fab fa-github h-6 w-6"></i>
                 </a>
             </div>
-            <div class="mt-8 md:order-1 md:mt-0">
+            <div class="mt-4 md:order-1 md:mt-0">
                 <p class="text-center text-base text-white">
                     &copy; YOUDEMY PLATFORME.
                 </p>
