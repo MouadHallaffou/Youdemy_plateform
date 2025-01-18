@@ -18,8 +18,8 @@
                 </a>
                 <div class="collapse" id="collapseStudents" aria-labelledby="headingStudents" data-bs-parent="#sidenavAccordion">
                     <nav class="sb-sidenav-menu-nested nav">
-                        <a class="nav-link" href="total-students.php">Voir total</a>
-                        <a class="nav-link" href="manage-students.php">Gérer les étudiants</a>
+                        <a class="nav-link" href="http://localhost/Youdemy_plateform/App/views/total-students.php">Voir total</a>
+                        <a class="nav-link" href="http://localhost/Youdemy_plateform/App/views/manage-students.php">Gérer les étudiants</a>
                     </nav>
                 </div>
 
