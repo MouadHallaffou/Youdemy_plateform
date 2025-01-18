@@ -1,17 +1,19 @@
 <?php
 namespace App\Controllers;
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once __DIR__ . '/../../vendor/autoload.php';
-
 use App\Config\Database;
+use App\controllers\CourseController;
 use App\Models\Teacher;
 use App\Models\Student;
 use Exception;
 use PDO;
+
+$pdo = Database::connect();
 
 class UsersController
 {
@@ -25,6 +27,7 @@ class UsersController
     public function register()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['addUser'])) {
+            // Récupérer les données du formulaire
             $name = trim($_POST['username']);
             $email = trim($_POST['email']);
             $password = trim($_POST['password']);
@@ -32,24 +35,29 @@ class UsersController
             $imageUrl = trim($_POST['image_url']);
             $role = trim($_POST['role']);
 
+            // Validation des champs obligatoires
             if (empty($name) || empty($email) || empty($password) || empty($role)) {
                 echo "Tous les champs obligatoires doivent être remplis.";
                 return;
             }
 
+            // Création d'un objet utilisateur basé sur le rôle
+            $user = null;
             if ($role === 'enseignant') {
-                $user = new Teacher($name, $email, $password, $bio, $role, $imageUrl);
+                $user = new Teacher($name, $email, $password, $bio, 'active', $imageUrl);
             } elseif ($role === 'etudiant') {
-                $user = new Student($name, $email, $password, $bio, $role, $imageUrl);
+                $user = new Student($this->pdo, $name, $email, $password, $bio, 'active', $imageUrl);
             } else {
                 echo "Rôle inconnu.";
                 return;
             }
 
+            // Sauvegarde de l'utilisateur
             try {
                 if ($user->save()) {
+                    // Redirection basée sur le rôle
                     if ($role === 'enseignant') {
-                        header("Location: http://localhost/Youdemy_plateform/App/views/teacherinterface.php");
+                        header("Location: http://localhost/Youdemy_plateform/App/views/userInterface.php");
                     } else {
                         header("Location: http://localhost/Youdemy_plateform/App/views/userInterface.php");
                     }
@@ -57,11 +65,12 @@ class UsersController
                 } else {
                     echo "Erreur lors de la création du compte.";
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 echo "Erreur : " . $e->getMessage();
             }
         }
     }
+
 
     // Récupérer tous les enseignants
     public function getTeachers()
@@ -74,77 +83,29 @@ class UsersController
     {
         return Student::getAllStudents($this->pdo);
     }
-
-
-    // public function loginUser() {
-    //     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
-    //         $email = trim($_POST['email']);
-    //         $password = trim($_POST['password']);
-
-    //         if (empty($email) || empty($password)) {
-    //             echo "Veuillez remplir tous les champs.";
-    //             return;
-    //         }
-
-    //         // Utilisateur générique pour le login
-    //         $user = new class('', '', '') extends \App\Models\User {
-    //             public function save() {}
-    //         };
-
-    //         if ($user->login($email, $password)) {
-    //             $role = $_SESSION['user_role'];
-
-    //             // Redirection en fonction du rôle
-    //             if ($role === 'etudiant') {
-    //                 header("Location: http://localhost/Youdemy_plateform/App/views/studentinterface.php");
-    //             } elseif ($role === 'enseignant') {
-    //                 header("Location: http://localhost/Youdemy_plateform/App/views/studentinterface.php");
-    //             } elseif ($role === 'admin') {
-    //                 header("Location: http://localhost/Youdemy_plateform/App/views/studentinterface.php");
-    //             }
-    //             exit();
-    //         } else {
-    //             echo "Identifiants invalides.";
-    //         }
-    //     }
-    // }
-
-
 }
 
+
+//instance sign in
 $user = new UsersController();
 $user->register();
 
 
-
-if (isset($_GET['action'], $_GET['id'])) {
-    $action = $_GET['action'];
-    $id = (int) $_GET['id'];
-
-    try {
-        $pdo = Database::connect();
-
-        if ($action === 'accept') {
-            $stmt = $pdo->prepare("UPDATE users SET status = 'active' WHERE user_id = ?");
-            $stmt->execute([$id]);
-            header('Location: validate-teachers.php');
-        }
-
-        elseif ($action === 'change_to_student') {
-            $stmt = $pdo->prepare("UPDATE users SET role = 'etudiant', status = 'pending' WHERE user_id = ?");
-            $stmt->execute([$id]);
-            header('Location: validate-teachers.php');
-        }
-
-        else {
-            header('Location: .validate-teachers.php');
-        }
-    } catch (Exception $e) {
-        header('Location: validate-teachers.php?error=' . urlencode($e->getMessage()));
+$action = $_GET['action'] ?? null;
+$studentId = $_GET['id'] ?? null;
+if ($action && $studentId) {
+    if (Student::updateStudentStatus($pdo, $studentId, $action)) {
+        header("Location: ../views/manage-students.php?status=success");
+    } else {
+        echo "Impossible de mettre à jour le statut.";
     }
+    exit();
+} else {
+    echo "Paramètres manquants ou méthode non autorisée.";
 }
 
 
+// login -> méthode de traitement
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $password = trim($_POST['password']);
@@ -155,23 +116,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([':email' => $email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($user && password_verify($password, $user['password'])) {
-
-            $_SESSION['user_id'] = $user['user_id'];
-            $_SESSION['user_name'] = $user['name'];
-            $_SESSION['user_role'] = $user['role'];
-            $_SESSION['image_url'] = $user['image_url'];
-
-            if ($user['role'] === 'etudiant') {
-                header('Location: ../../index.php');
-            } elseif ($user['role'] === 'enseignant') {
-                header('Location: ../views/teacherinterface.php');
-            } elseif ($user['role'] === 'admin') {
-                header('Location: http://localhost/Youdemy_plateform/App/public/dist/dashboard.php');
-            }else {
-                header('Location: ../../index.php');
+        if ($user) {
+            // Vérifier si l'utilisateur a un statut "suspended"
+            if ($user['status'] === 'suspended') {
+                echo "Votre compte a été suspendu. Veuillez contacter l'administrateur.";
+                exit();
             }
-            exit();
+
+            // Vérifier les identifiants
+            if (password_verify($password, $user['password'])) {
+
+                // Créer les sessions après une connexion réussie
+                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['user_name'] = $user['name'];
+                $_SESSION['user_role'] = $user['role'];
+                $_SESSION['image_url'] = $user['image_url'];
+                $_SESSION['status'] = $user['status'];
+
+                // Rediriger l'utilisateur en fonction de son rôle
+                if ($user['role'] === 'etudiant') {
+                    header('Location: ../../index.php');
+                } elseif ($user['role'] === 'enseignant' && $user['status'] === 'pending') {
+                    header('Location: ../../index.php');
+                } elseif ($user['role'] === 'enseignant' && $user['status'] === 'active') {
+                    header('Location: ../views/teacherinterface.php');
+                } elseif ($user['role'] === 'admin') {
+                    header('Location: http://localhost/Youdemy_plateform/App/public/dist/dashboard.php');
+                } else {
+                    header('Location: ../../index.php');
+                }
+                exit();
+            } else {
+                echo "Identifiants incorrects.";
+            }
         } else {
             echo "Identifiants incorrects.";
         }
@@ -179,3 +156,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "Erreur : " . $e->getMessage();
     }
 }
+
