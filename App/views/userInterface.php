@@ -1,7 +1,8 @@
 <?php
+require_once __DIR__ . '/../controllers/crud_course.php';
+
 use App\controllers\CourseController;
 
-require_once __DIR__ . '/../controllers/crud_course.php';
 if (!isset($coursesaccepted) || !is_array($coursesaccepted)) {
     $coursesaccepted = [];
 }
@@ -20,6 +21,15 @@ if (session_status() === PHP_SESSION_NONE) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Popup styling */
+        #course-popup {
+            z-index: 1000;
+        }
+
+        #course-popup .rounded-lg {
+            max-height: 90vh;
+        }
+
         .hidden {
             display: none;
         }
@@ -33,12 +43,16 @@ if (session_status() === PHP_SESSION_NONE) {
             YOUDEMY
         </a>
 
-        <div class="relative mx-auto hidden lg:block">
-            <input class="border border-gray-300 placeholder-current h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none dark:bg-gray-500 dark:border-gray-50 dark:text-gray-200" type="search" name="search" placeholder="Search">
+        <form method="GET" action="" class="relative mx-auto hidden lg:block">
+            <input class="border border-gray-300 placeholder-current h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none dark:bg-gray-500 dark:border-gray-50 dark:text-gray-200"
+                type="search"
+                name="search"
+                placeholder="Search"
+                value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
             <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
                 <i class="fas fa-search text-gray-600 dark:text-gray-200 h-4 w-4"></i>
             </button>
-        </div>
+        </form>
 
         <div class="lg:flex items-center">
             <?php if (isset($_SESSION['user_id'])): ?>
@@ -47,16 +61,16 @@ if (session_status() === PHP_SESSION_NONE) {
                     <span class="text-gray-700 dark:text-gray-200 font-medium">
                         Bienvenue, <a href="/profile" class="text-white"><?= htmlspecialchars($_SESSION['user_name']) ?></a>
                     </span>
-                    <a href="../../../Youdemy_plateform/App/controllers/logout.php" class="py-1.5 px-3 text-center bg-red-600 border rounded-md text-white hover:bg-red-500 dark:bg-red-600 dark:hover:bg-red-500">
+                    <a href="../../../Youdemy_plateform/App/controllers/logout.php" class="py-1.5 px-3 text-center bg-red-600 rounded-md text-white hover:bg-red-500 dark:bg-red-600 dark:hover:bg-red-500">
                         Logout
                     </a>
                 </div>
             <?php else: ?>
                 <!-- Affichage pour un utilisateur non connecté -->
-                <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="open-login-popup">
+                <button class="py-1.5 px-3 m-1 text-center bg-violet-700  rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="open-login-popup">
                     Login
                 </button>
-                <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="open-signup-popup">
+                <button class="py-1.5 px-3 m-1 text-center bg-violet-700  rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="open-signup-popup">
                     Sign up
                 </button>
             <?php endif; ?>
@@ -64,22 +78,23 @@ if (session_status() === PHP_SESSION_NONE) {
     </nav>
 
     <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 mt-20">
-        <div class="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-10">
-            <?php foreach ($coursesaccepted as $course): ?>
-                <div class="border border-gray-400 bg-white rounded flex flex-col justify-between leading-normal shadow-md">
+        <div id="course-container" class="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-10">
+            <?php foreach ($coursesaccepted as $index => $course): ?>
+                <div
+                    class="course-card border border-gray-400 bg-white rounded flex flex-col justify-between leading-normal shadow-md cursor-pointer"
+                    onclick="showPopup(<?= htmlspecialchars(json_encode($course)); ?>)">
                     <div class="p-4">
                         <?php if ($course['contenu'] === 'video'): ?>
                             <?php $embedUrl = CourseController::convertToEmbedUrl($course['video_url']); ?>
                             <?php if ($embedUrl): ?>
                                 <iframe src="<?= htmlspecialchars($embedUrl); ?>" class="w-full h-60 rounded" frameborder="0" allowfullscreen></iframe>
-                                <!-- <?php var_dump($embedUrl); ?> -->
                             <?php else: ?>
                                 <p>URL de vidéo invalide.</p>
                             <?php endif; ?>
                         <?php elseif ($course['contenu'] === 'document'): ?>
                             <div class="document-text">
                                 <p><?= htmlspecialchars(CourseController::truncateText($course['document_text'], 300)); ?></p>
-                                <button class="text-blue-500 hover:underline text-sm" onclick=" ">Afficher plus</button>
+                                <button class="text-blue-500 hover:underline text-sm">Afficher plus</button>
                             </div>
                         <?php endif; ?>
                         <a href="#" class="text-gray-900 font-bold text-lg mb-2 hover:text-indigo-600"><?= htmlspecialchars($course['titre']); ?></a>
@@ -87,7 +102,7 @@ if (session_status() === PHP_SESSION_NONE) {
                     </div>
                     <div class="flex items-center p-4 border-t border-gray-300">
                         <a href="#">
-                            <img class="w-10 h-10 rounded-full mr-4" src="https://tailwindcss.com/img/jonathan.jpg" alt="Avatar de l'enseignant">
+                            <img class="w-10 h-10 rounded-full mr-4" src="<?= htmlspecialchars($course['image_url']); ?>" alt="enseignant">
                         </a>
                         <div class="text-sm">
                             <a href="#" class="text-gray-900 font-semibold leading-none hover:text-indigo-600"><?= htmlspecialchars($course['user_name']); ?></a>
@@ -97,10 +112,42 @@ if (session_status() === PHP_SESSION_NONE) {
                 </div>
             <?php endforeach; ?>
         </div>
+
+        <!-- Pagination -->
+        <div class="flex items-center justify-center mt-5">
+            <button id="prev" class="bg-indigo-600 text-white py-2 px-3 rounded hover:bg-indigo-700" onclick="changePage(-1)" aria-label="Page précédente">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <div class="flex justify-center mx-4">
+                <span class="page-number" id="page-number">1</span>
+                <span class="mx-2">/</span>
+                <span id="total-pages"></span>
+            </div>
+
+            <button id="next" class="bg-indigo-600 text-white py-2 px-3 rounded hover:bg-indigo-700" onclick="changePage(1)" aria-label="Prochaine page">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="flex justify-center mt-2">
+            <div id="pagination"></div>
+        </div>
     </div>
 
-    <footer class="bg-sky-800">
-        <div class="mx-auto max-w-7xl py-8 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
+    <!-- Popup de details -->
+    <div id="course-popup" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-lg max-w-5xl w-full p-6 relative">
+            <button class="absolute top-2 right-2 text-black text-1xl font-bold" onclick="closePopup()">✕</button>
+            <div id="popup-content" class="max-h-full-screen overflow-auto">
+                <!-- Content dynamically injected -->
+            </div>
+        </div>
+    </div>
+
+
+    <footer class="bg-sky-800 rounded-lg">
+        <div class="mx-auto max-w-7xl py-4 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
             <nav class="-mx-5 -my-2 flex flex-wrap justify-center order-2" aria-label="Footer">
                 <div class="px-5">
                     <a href="#" class="text-base text-white hover:text-gray-200">Terms of Service</a>
@@ -109,7 +156,7 @@ if (session_status() === PHP_SESSION_NONE) {
                     <a href="#" class="text-base text-white hover:text-gray-200">Privacy Policy</a>
                 </div>
             </nav>
-            <div class="mt-8 md:mb-8 flex justify-center space-x-6 md:order-3">
+            <div class="mt-4 md:mb-0 flex justify-center space-x-6 md:order-3">
                 <a href="#" class="text-white hover:text-gray-200">
                     <i class="fab fa-facebook h-6 w-6"></i>
                 </a>
@@ -120,7 +167,7 @@ if (session_status() === PHP_SESSION_NONE) {
                     <i class="fab fa-github h-6 w-6"></i>
                 </a>
             </div>
-            <div class="mt-8 md:order-1 md:mt-0">
+            <div class="mt-4 md:order-1 md:mt-0">
                 <p class="text-center text-base text-white">
                     &copy; YOUDEMY PLATFORME.
                 </p>
@@ -167,7 +214,7 @@ if (session_status() === PHP_SESSION_NONE) {
                         <a href="#" class="font-medium text-[#4285f4]" onclick="toggleForms(); return false;">Inscrivez-vous ici</a>
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -265,6 +312,94 @@ if (session_status() === PHP_SESSION_NONE) {
                 signupPopup.classList.remove('hidden');
                 loginPopup.classList.add('hidden');
             }
+        }
+
+        let currentPage = 0;
+        const cardsPerPage = 3;
+        const cards = document.querySelectorAll('.course-card');
+        const totalCards = cards.length;
+        const totalPages = Math.ceil(totalCards / cardsPerPage);
+
+        function showPage(page) {
+            // Hide all cards
+            cards.forEach(card => card.classList.add('hidden'));
+            // Calculate start and end index
+            const start = page * cardsPerPage;
+            const end = start + cardsPerPage;
+
+            // Show cards for the current page
+            for (let i = start; i < end && i < totalCards; i++) {
+                cards[i].classList.remove('hidden');
+            }
+
+            // Update page number display
+            document.getElementById('page-number').textContent = page + 1;
+            document.getElementById('total-pages').textContent = totalPages;
+
+            // Update pagination links
+            updatePagination(page);
+
+            // Disable buttons if on first or last page
+            document.getElementById('prev').disabled = page === 0;
+            document.getElementById('next').disabled = page === totalPages - 1;
+        }
+
+        function changePage(direction) {
+            currentPage += direction;
+            showPage(currentPage);
+        }
+
+        function updatePagination(page) {
+            const paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = ''; // Clear previous links
+
+            for (let i = 0; i < totalPages; i++) {
+                const pageLink = document.createElement('button');
+                pageLink.textContent = i + 1;
+                pageLink.className = 'bg-gray-200 text-gray-800 rounded px-2 py-1 mx-1' + (i === page ? ' font-bold' : '');
+                pageLink.onclick = () => {
+                    currentPage = i;
+                    showPage(currentPage);
+                };
+                paginationContainer.appendChild(pageLink);
+            }
+        }
+
+        // Initial page
+        showPage(currentPage);
+        updatePagination(currentPage);
+
+        
+        // Function to show the popup with course details
+        function showPopup(course) {
+            const popup = document.getElementById('course-popup');
+            const popupContent = document.getElementById('popup-content');
+
+            let content = '';
+            if (course.contenu === 'video') {
+                const embedUrl = course.video_url ? course.video_url.replace('watch?v=', 'embed/') : null;
+                content = embedUrl ?
+                    `<iframe src="${embedUrl}" class="w-full h-96 rounded" frameborder="0" allowfullscreen></iframe>` :
+                    '<p class="text-red-600">URL de vidéo invalide.</p>';
+            } else if (course.contenu === 'document') {
+                content = `
+                <textarea class="w-full h-96 p-4 border border-gray-300 rounded" readonly>${course.document_text}</textarea>
+            `;
+            }
+
+            content += `
+            <h2 class="text-xl font-bold mt-4">${course.titre}</h2>
+            <p class="text-gray-700 mt-2">${course.description}</p>
+        `;
+
+            popupContent.innerHTML = content;
+            popup.classList.remove('hidden');
+        }
+
+        // Function to close the popup
+        function closePopup() {
+            const popup = document.getElementById('course-popup');
+            popup.classList.add('hidden');
         }
     </script>
 
