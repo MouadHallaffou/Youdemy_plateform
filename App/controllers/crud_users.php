@@ -71,7 +71,6 @@ class UsersController
         }
     }
 
-
     // Récupérer tous les enseignants
     public function getTeachers()
     {
@@ -83,14 +82,24 @@ class UsersController
     {
         return Student::getAllStudents($this->pdo);
     }
+
+    public function getTroisTopTeachers($pdo){
+        return Teacher::getTopTeachers($pdo);
+    }
 }
 
 
 //instance sign in
 $user = new UsersController();
 $user->register();
+$Teachers = new UsersController();
+$allTeachers = $Teachers-> getTeachers();
+$AllStudent = Student::getAllStudents($pdo);
+$TopTeachers = $Teachers->getTroisTopTeachers($pdo);
 
 
+
+// update status etudiant (action formulaire)
 $action = $_GET['action'] ?? null;
 $studentId = $_GET['id'] ?? null;
 if ($action && $studentId) {
@@ -101,9 +110,8 @@ if ($action && $studentId) {
     }
     exit();
 } else {
-    echo "Paramètres manquants ou méthode non autorisée.";
+    echo "Impossible de mettre à jour le statut.";
 }
-
 
 // login -> méthode de traitement
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -119,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user) {
             // Vérifier si l'utilisateur a un statut "suspended"
             if ($user['status'] === 'suspended') {
-                echo "Votre compte a été suspendu. Veuillez contacter l'administrateur.";
+                echo "Votre compte  suspendu. contacter l'administrateur.";
                 exit();
             }
 
@@ -135,9 +143,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 // Rediriger l'utilisateur en fonction de son rôle
                 if ($user['role'] === 'etudiant') {
-                    header('Location: ../../index.php');
+                    header('Location: http://localhost/Youdemy_plateform/App/views/userInterface.php');
                 } elseif ($user['role'] === 'enseignant' && $user['status'] === 'pending') {
-                    header('Location: ../../index.php');
+                    header('Location: http://localhost/Youdemy_plateform/App/views/userInterface.php');
                 } elseif ($user['role'] === 'enseignant' && $user['status'] === 'active') {
                     header('Location: ../views/teacherinterface.php');
                 } elseif ($user['role'] === 'admin') {

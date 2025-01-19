@@ -14,7 +14,7 @@ class AdminHandler {
 
         // Fetch admin data to initialize
         $currentAdminData = $this->getCurrentAdminData($adminId);
-        $this->admin = new Admin($adminId, $currentAdminData['name'], $currentAdminData['email'], ''); // Password is not set here
+        $this->admin = new Admin($adminId, $currentAdminData['name'], $currentAdminData['email'], '');
     }
 
     public function getCurrentAdminData(int $adminId): array {

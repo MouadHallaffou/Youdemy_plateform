@@ -1,10 +1,9 @@
 <?php
 namespace App\controllers;
 require_once __DIR__ . '/../../vendor/autoload.php';
+
 use App\Config\Database;
 use App\Models\Teacher;
-
-// crud_users.php
 
 $pdo = Database::connect();
 $action = $_GET['action'] ?? null;

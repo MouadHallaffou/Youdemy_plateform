@@ -8,6 +8,10 @@ if (session_status() === PHP_SESSION_NONE) {
 
 use App\Config\Database;
 use App\Models\Course;
+use App\Models\Student;
+use App\Models\Teacher;
+
+$pdo = Database::connect();
 
 class CourseController
 {
@@ -130,7 +134,7 @@ class CourseController
         return $this->courseModel->getAcceptedCourses();
     }
 
-
+    // methode affiche petite partie du text
     public static function truncateText($text, $maxLength = 300)
     {
         if (strlen($text) > $maxLength) {
@@ -139,6 +143,7 @@ class CourseController
         return $text;
     }
 
+    //methode convert lien youtube
     public static function convertToEmbedUrl($url)
     {
         $videoId = null;
@@ -151,11 +156,22 @@ class CourseController
 
         return $videoId ? "https://www.youtube.com/embed/$videoId" : null;
     }
+
+    // searche methodes by titre
+    public function searchCourses($title, array $courses): array {
+        return Student::searchByTitle($courses, $title);
+    }
+
+    public function getTroisTopCourses($pdo){
+        return Course::getTopcourses($pdo);
+    }
+    
 }
 
-
-$pdo = Database::connect();
 $controller = new CourseController($pdo);
 $controller->handleRequest();
 $courses = $controller->getCourses();
 $coursesaccepted = $controller->getCoursesAcetpted();
+
+//les 3 meilleurs cours :
+$TopCourses = $controller->getTroisTopCourses($pdo); 
