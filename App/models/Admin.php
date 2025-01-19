@@ -32,7 +32,7 @@ class Admin extends User {
 
     }
     
-    public function searchByTitle(array $courses, string $title): array
+    public static function searchByTitle(array $courses, string $title): array
     {
         return array_filter($courses, function ($course) use ($title) {
             return stripos($course['titre'], $title) !== false;

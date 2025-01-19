@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use PDO;
@@ -160,14 +161,14 @@ class Course
     public function getAllCourses()
     {
         $sql = "SELECT c.course_id, c.titre, c.description,c.status,c.date_status As date,u.name AS name,
-                c.contenu, c.video_url, c.document_text,cat.name AS category_name,
-                GROUP_CONCAT(t.name SEPARATOR ' ') AS tags
+                c.contenu, c.video_url, c.document_text,cat.name AS category_name,u.image_url,
+                GROUP_CONCAT(t.name SEPARATOR ' ') AS tags , COUNT(i.inscription_id) AS total_inscription
                 FROM courses c
                 LEFT JOIN categories cat ON c.category_id = cat.category_id
                 LEFT JOIN course_tag ct ON c.course_id = ct.course_id
                 LEFT JOIN tags t ON ct.tag_id = t.tag_id
                 LEFT JOIN users u ON u.user_id = c.enseignant_id
-                where c.status = 'soumis'
+                LEFT JOIN inscriptions i ON c.course_id = i.course_id
                 GROUP BY c.course_id";
 
         $stmt = $this->pdo->prepare($sql);
@@ -177,9 +178,9 @@ class Course
 
     public function getAcceptedCourses(): array
     {
-        $sql = "SELECT c.course_id, c.titre, DATE(c.date_status) As date, c.description,c.status,u.image_url, u.name As user_name,
-                c.contenu, c.video_url, c.document_text,cat.name AS category_name,
-                GROUP_CONCAT(t.name SEPARATOR ' ') AS tags
+        $sql = "SELECT c.course_id, c.titre, DATE(c.date_status) As date, c.description,c.status,
+                u.image_url, u.name As user_name,c.contenu, c.video_url, c.document_text,
+                cat.name AS category_name, GROUP_CONCAT(t.name SEPARATOR ' ') AS tags
                 FROM courses c
                 LEFT JOIN categories cat ON c.category_id = cat.category_id
                 LEFT JOIN course_tag ct ON c.course_id = ct.course_id
@@ -195,15 +196,20 @@ class Course
 
     public function getCoursesTeacher(string $username): array
     {
-        $sql = "SELECT c.course_id, c.titre, c.date_status AS date, c.description, c.status, u.name AS user_name,c.contenu, c.video_url, 
-        c.document_text, cat.name AS category_name,GROUP_CONCAT(t.name SEPARATOR ' ') AS tags FROM 
-        courses c 
+        $sql = "SELECT c.course_id, c.titre, c.date_status AS date, c.description, c.status, 
+        u.name AS user_name,c.contenu, c.video_url, 
+        c.document_text, cat.name AS category_name,GROUP_CONCAT(t.name SEPARATOR ' ') AS tags, 
+        u.image_url, COUNT(i.inscription_id) AS total_inscription
+        FROM courses c 
         LEFT JOIN categories cat ON c.category_id = cat.category_id 
         LEFT JOIN course_tag ct ON c.course_id = ct.course_id 
         LEFT JOIN tags t ON ct.tag_id = t.tag_id 
         LEFT JOIN users u ON u.user_id = c.enseignant_id 
+        LEFT JOIN inscriptions i ON c.course_id = i.course_id
         WHERE u.name = ?
-        GROUP BY c.course_id, c.titre, c.date_status, c.description, c.status, u.name, c.contenu, c.video_url, c.document_text, cat.name";
+        GROUP BY c.course_id, c.titre, c.date_status, c.description, c.status, 
+        u.name, c.contenu, c.video_url, c.document_text, cat.name";
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$username]);
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -224,5 +230,22 @@ class Course
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['status' => $status, 'course_id' => $courseId]);
     }
-    
+
+    public static function getTopcourses(PDO $pdo)
+    {
+        if (!$pdo instanceof PDO) {
+            throw new Exception("La connexion PDO n'est pas valide.");
+        }
+        $sql = "SELECT c.course_id,c.titre AS course_title,c.description AS course_description,
+            COUNT(i.inscription_id) AS total_enrollments
+            FROM courses c
+            LEFT JOIN inscriptions i ON c.course_id = i.course_id
+            WHERE  c.status = 'accepte'
+            GROUP BY  c.course_id
+            ORDER BY total_enrollments DESC
+            LIMIT 3";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

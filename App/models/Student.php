@@ -1,39 +1,42 @@
 <?php
+
 namespace App\Models;
 
 use Exception;
 use PDO;
 
-class Student extends User {
-    protected $pdo; // Ensure this matches the visibility in the User class
+class Student extends User
+{
+    protected $pdo;
 
     public function __construct(PDO $pdo, string $name = '', string $email = '', string $password = '', string $bio = '', string $status = 'active', string $imageUrl = '')
     {
         parent::__construct($name, $email, $password, $bio, $status, $imageUrl);
-        $this->pdo = $pdo; 
+        $this->pdo = $pdo;
         $this->role = 'etudiant';
-        $this->status = $status; 
+        $this->status = $status;
     }
 
-    public function save() {
+    public function save()
+    {
         if (!$this->pdo) {
             throw new Exception("La connexion PDO n'est pas valide.");
         }
-        
+
         $query = "INSERT INTO users (name, email, password, bio, image_url, role, status) 
                   VALUES (:name, :email, :password, :bio, :image_url, :role, :status)";
         $stmt = $this->pdo->prepare($query);
-    
+
         $params = [
-            ':name' => $this->name,          
-            ':email' => $this->email,        
-            ':password' => $this->password, 
-            ':bio' => $this->bio,            
-            ':image_url' => $this->imageUrl, 
-            ':role' => $this->role,          
-            ':status' => $this->status       
+            ':name' => $this->name,
+            ':email' => $this->email,
+            ':password' => $this->password,
+            ':bio' => $this->bio,
+            ':image_url' => $this->imageUrl,
+            ':role' => $this->role,
+            ':status' => $this->status
         ];
-    
+
         try {
             $stmt->execute($params);
             return true;
@@ -43,11 +46,12 @@ class Student extends User {
     }
 
     // Method to retrieve all students
-    public static function getAllStudents(PDO $pdo) {
+    public static function getAllStudents(PDO $pdo)
+    {
         if (!$pdo instanceof PDO) {
             throw new Exception("La connexion PDO n'est pas valide.");
         }
-        
+
         $query = "SELECT * FROM users WHERE role = 'etudiant'";
         $stmt = $pdo->prepare($query);
         $stmt->execute();
@@ -77,14 +81,17 @@ class Student extends User {
         return $stmt->execute();
     }
 
-    public function searchByTitle(array $courses, string $title): array
+    public static function searchByTitle(array $courses, string $title): array
     {
         return array_filter($courses, function ($course) use ($title) {
             return stripos($course['titre'], $title) !== false;
         });
     }
+
+    public function inscrireAuCours($courseId)
+    {
+        $inscriptionHandler = new Inscription($this->pdo);
+        return $inscriptionHandler->inscrireEtudiant($this->getId(), $courseId);
+    }
+    
 }
-
-
-
-
