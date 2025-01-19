@@ -1,25 +1,40 @@
 <?php
 require_once __DIR__ . '/../../../../vendor/autoload.php';
+require_once __DIR__ . '/../../../config/Database.php'; 
+
+use App\Config\Database;
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$adminName = 'MouadHallaffou';
+$pdo = Database::connect();
+
+if (!$pdo) {
+    die("Erreur : Connexion à la base de données échouée.");
+}
+
+$adminName = 'mouadhallaffou';
 
 if (isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];
 
-    $sql = "SELECT * FROM users WHERE user_id = :user_id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':user_id' => $userId]);
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($user) {
-        $adminName = $_SESSION['user_name'] ?? $user['name'];
-        $_SESSION['user_name'] = $adminName; 
+    try {
+        $sql = "SELECT * FROM users WHERE user_id = :user_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':user_id' => $userId]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user) {
+            $adminName = $_SESSION['user_name'] ?? $user['name'];
+            $_SESSION['user_name'] = $adminName; 
+        }
+    } catch (PDOException $e) {
+        die("Erreur lors de l'accès à la base de données : " . $e->getMessage());
     }
 }
 ?>
+
 
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
@@ -47,7 +62,7 @@ if (isset($_SESSION['user_id'])) {
                 <img src="<?= htmlspecialchars ($_SESSION['image_url'] ?? 'https://cdn.sofifa.net/players/209/981/25_120.png') ?>" alt="Profile" class="rounded-circle" style="width: 30px; height: 30px;">
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="http://localhost/Youdemy_plateform/App/views/editProfileAdmin.php">Profile</a></li>
+                <li><a class="dropdown-item" href="http://localhost/Youdemy_plateform/App/views/editProfile.php">Profile</a></li>
                 <li><a class="dropdown-item" href="#!">Settings</a></li>
                 <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                 <li>

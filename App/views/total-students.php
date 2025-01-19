@@ -76,7 +76,6 @@ $students = $controller->getStudents();
                                         <th>name</th>
                                         <th>email</th>
                                         <th>status</th>
-                                        <th>nbr cours</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
@@ -85,7 +84,6 @@ $students = $controller->getStudents();
                                         <th>name</th>
                                         <th>email</th>
                                         <th>status</th>
-                                        <th>nbr cours</th>
                                     </tr>
                                 </tfoot>
                                 <tbody>
@@ -95,7 +93,6 @@ $students = $controller->getStudents();
                                             <td><?= htmlspecialchars($student['name']); ?></td>
                                             <td><?= htmlspecialchars($student['email']); ?></td>
                                             <td><?= htmlspecialchars($student['status']); ?></td>
-                                            <td><?= htmlspecialchars('0'); ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>

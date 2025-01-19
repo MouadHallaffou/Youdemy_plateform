@@ -10,6 +10,12 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+$searchTerm = $_GET['search'] ?? '';
+if ($searchTerm) {
+    $courseController = new CourseController($pdo);
+    $coursesaccepted = $courseController->searchCourses($searchTerm, $coursesaccepted);
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -43,8 +49,8 @@ if (session_status() === PHP_SESSION_NONE) {
             YOUDEMY
         </a>
 
-        <form method="GET" action="" class="relative mx-auto hidden lg:block">
-            <input class="border border-gray-300 placeholder-current h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none dark:bg-gray-500 dark:border-gray-50 dark:text-gray-200"
+        <form method="GET" action="" class="relative mx-auto lg:block">
+            <input class="border border-gray-200 placeholder-current h-12 px-10 pr-20 rounded-lg text-sm focus:outline-none dark:bg-gray-400 dark:border-gray-50 dark:text-gray-200"
                 type="search"
                 name="search"
                 placeholder="Search"
@@ -56,15 +62,25 @@ if (session_status() === PHP_SESSION_NONE) {
 
         <div class="lg:flex items-center">
             <?php if (isset($_SESSION['user_id'])): ?>
-                <!-- Affichage pour un utilisateur connecté -->
-                <div class="flex items-center gap-4">
-                    <span class="text-gray-700 dark:text-gray-200 font-medium">
-                        Bienvenue, <a href="/profile" class="text-white"><?= htmlspecialchars($_SESSION['user_name']) ?></a>
-                    </span>
-                    <a href="../../../Youdemy_plateform/App/controllers/logout.php" class="py-1.5 px-3 text-center bg-red-600 rounded-md text-white hover:bg-red-500 dark:bg-red-600 dark:hover:bg-red-500">
-                        Logout
-                    </a>
+                <div class="relative inline-block text-left">
+                    <div>
+                        <button type="button" class="inline-flex items-center text-gray-700 dark:text-gray-200 focus:outline-none" id="menu-button" aria-expanded="true" aria-haspopup="true" onclick="toggleMenu()">
+                            <img src="<?= htmlspecialchars($_SESSION['image_url'] ?? 'https://cdn.sofifa.net/players/209/981/25_120.png') ?>" alt="Profil" class="rounded-full" style="width: 30px; height: 30px;">
+                            <span class="ml-2"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+                        </button>
+                    </div>
+
+                    <div id="menu" class="absolute right-0 z-10 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
+                        <div class="py-1" role="none">
+                            <a href="http://localhost/Youdemy_plateform/App/views/editProfile.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Profile</a>
+                            <a href="#!" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Settings</a>
+                            <a href="#!" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Activity Log</a>
+                            <div class="border-t border-gray-200 dark:border-gray-700"></div>
+                            <a href="http://localhost/Youdemy_plateform/App/controllers/logout.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Logout</a>
+                        </div>
+                    </div>
                 </div>
+
             <?php else: ?>
                 <!-- Affichage pour un utilisateur non connecté -->
                 <button class="py-1.5 px-3 m-1 text-center bg-violet-700  rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="open-login-popup">
@@ -77,13 +93,14 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
     </nav>
 
-    <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 mt-20">
+    <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 mt-10">
+
         <div id="course-container" class="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-10">
-            <?php foreach ($coursesaccepted as $index => $course): ?>
+            <?php foreach ($coursesaccepted as $course): ?>
                 <div
                     class="course-card border border-gray-400 bg-white rounded flex flex-col justify-between leading-normal shadow-md cursor-pointer"
                     onclick="showPopup(<?= htmlspecialchars(json_encode($course)); ?>)">
-                    <div class="p-4">
+                    <div class="p-2">
                         <?php if ($course['contenu'] === 'video'): ?>
                             <?php $embedUrl = CourseController::convertToEmbedUrl($course['video_url']); ?>
                             <?php if ($embedUrl): ?>
@@ -101,13 +118,17 @@ if (session_status() === PHP_SESSION_NONE) {
                         <p class="text-gray-700 text-sm"><?= htmlspecialchars($course['description']); ?></p>
                     </div>
                     <div class="flex items-center p-4 border-t border-gray-300">
-                        <a href="#">
-                            <img class="w-10 h-10 rounded-full mr-4" src="<?= htmlspecialchars($course['image_url']); ?>" alt="enseignant">
-                        </a>
+                        <img class="w-10 h-10 rounded-full mr-4" src="<?= htmlspecialchars($course['image_url']); ?>" alt="enseignant">
                         <div class="text-sm">
                             <a href="#" class="text-gray-900 font-semibold leading-none hover:text-indigo-600"><?= htmlspecialchars($course['user_name']); ?></a>
                             <p class="text-gray-600">Date de création du cours: <?= htmlspecialchars($course['date']); ?></p>
                         </div>
+                    </div>
+                    <div class="p-2">
+                        <form method="POST" action="../controllers/inscrire.php">
+                            <input type="hidden" name="course_id" value="<?= htmlspecialchars($course['course_id']); ?>">
+                            <button type="submit" class="py-1 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600">S'inscrire</button>
+                        </form>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -133,20 +154,20 @@ if (session_status() === PHP_SESSION_NONE) {
         <div class="flex justify-center mt-2">
             <div id="pagination"></div>
         </div>
-    </div>
 
-    <!-- Popup de details -->
-    <div id="course-popup" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center">
-        <div class="bg-white rounded-lg shadow-lg max-w-5xl w-full p-6 relative">
-            <button class="absolute top-2 right-2 text-black text-1xl font-bold" onclick="closePopup()">✕</button>
-            <div id="popup-content" class="max-h-full-screen overflow-auto">
-                <!-- Content dynamically injected -->
+
+        <!-- Popup de details -->
+        <div id="course-popup" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center">
+            <div class="bg-white rounded-lg shadow-lg max-w-5xl w-full p-6 relative">
+                <button class="absolute top-2 right-2 text-black text-1xl font-bold" onclick="closePopup()">✕</button>
+                <div id="popup-content" class="max-h-full-screen overflow-auto">
+                    <!-- Content -->
+                </div>
             </div>
         </div>
     </div>
 
-
-    <footer class="bg-sky-800 rounded-lg">
+    <footer class="bg-sky-800 fixed bottom-0 w-full">
         <div class="mx-auto max-w-7xl py-4 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
             <nav class="-mx-5 -my-2 flex flex-wrap justify-center order-2" aria-label="Footer">
                 <div class="px-5">
@@ -169,7 +190,7 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
             <div class="mt-4 md:order-1 md:mt-0">
                 <p class="text-center text-base text-white">
-                    &copy; YOUDEMY PLATFORME.
+                    &copy; 2025 YOUDEMY PLATFORME.
                 </p>
             </div>
         </div>
@@ -283,125 +304,13 @@ if (session_status() === PHP_SESSION_NONE) {
     </div>
 
     <script>
-        document.getElementById("open-login-popup").addEventListener("click", function() {
-            document.getElementById("login-popup").classList.remove('hidden');
-            document.getElementById("signup-popup").classList.add('hidden');
-        });
-
-        document.getElementById("open-signup-popup").addEventListener("click", function() {
-            document.getElementById("signup-popup").classList.remove('hidden');
-            document.getElementById("login-popup").classList.add('hidden');
-        });
-
-        document.getElementById("popup-close").addEventListener("click", function() {
-            document.getElementById("login-popup").classList.add('hidden');
-        });
-
-        document.getElementById("signup-close").addEventListener("click", function() {
-            document.getElementById("signup-popup").classList.add('hidden');
-        });
-
-        function toggleForms() {
-            const loginPopup = document.getElementById("login-popup");
-            const signupPopup = document.getElementById("signup-popup");
-
-            if (loginPopup.classList.contains('hidden')) {
-                loginPopup.classList.remove('hidden');
-                signupPopup.classList.add('hidden');
-            } else {
-                signupPopup.classList.remove('hidden');
-                loginPopup.classList.add('hidden');
-            }
-        }
-
-        let currentPage = 0;
-        const cardsPerPage = 3;
-        const cards = document.querySelectorAll('.course-card');
-        const totalCards = cards.length;
-        const totalPages = Math.ceil(totalCards / cardsPerPage);
-
-        function showPage(page) {
-            // Hide all cards
-            cards.forEach(card => card.classList.add('hidden'));
-            // Calculate start and end index
-            const start = page * cardsPerPage;
-            const end = start + cardsPerPage;
-
-            // Show cards for the current page
-            for (let i = start; i < end && i < totalCards; i++) {
-                cards[i].classList.remove('hidden');
-            }
-
-            // Update page number display
-            document.getElementById('page-number').textContent = page + 1;
-            document.getElementById('total-pages').textContent = totalPages;
-
-            // Update pagination links
-            updatePagination(page);
-
-            // Disable buttons if on first or last page
-            document.getElementById('prev').disabled = page === 0;
-            document.getElementById('next').disabled = page === totalPages - 1;
-        }
-
-        function changePage(direction) {
-            currentPage += direction;
-            showPage(currentPage);
-        }
-
-        function updatePagination(page) {
-            const paginationContainer = document.getElementById('pagination');
-            paginationContainer.innerHTML = ''; // Clear previous links
-
-            for (let i = 0; i < totalPages; i++) {
-                const pageLink = document.createElement('button');
-                pageLink.textContent = i + 1;
-                pageLink.className = 'bg-gray-200 text-gray-800 rounded px-2 py-1 mx-1' + (i === page ? ' font-bold' : '');
-                pageLink.onclick = () => {
-                    currentPage = i;
-                    showPage(currentPage);
-                };
-                paginationContainer.appendChild(pageLink);
-            }
-        }
-
-        // Initial page
-        showPage(currentPage);
-        updatePagination(currentPage);
-
-        
-        // Function to show the popup with course details
-        function showPopup(course) {
-            const popup = document.getElementById('course-popup');
-            const popupContent = document.getElementById('popup-content');
-
-            let content = '';
-            if (course.contenu === 'video') {
-                const embedUrl = course.video_url ? course.video_url.replace('watch?v=', 'embed/') : null;
-                content = embedUrl ?
-                    `<iframe src="${embedUrl}" class="w-full h-96 rounded" frameborder="0" allowfullscreen></iframe>` :
-                    '<p class="text-red-600">URL de vidéo invalide.</p>';
-            } else if (course.contenu === 'document') {
-                content = `
-                <textarea class="w-full h-96 p-4 border border-gray-300 rounded" readonly>${course.document_text}</textarea>
-            `;
-            }
-
-            content += `
-            <h2 class="text-xl font-bold mt-4">${course.titre}</h2>
-            <p class="text-gray-700 mt-2">${course.description}</p>
-        `;
-
-            popupContent.innerHTML = content;
-            popup.classList.remove('hidden');
-        }
-
-        // Function to close the popup
-        function closePopup() {
-            const popup = document.getElementById('course-popup');
-            popup.classList.add('hidden');
+        // profile menu
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.classList.toggle("hidden");
         }
     </script>
+    <script src="./../public/dist/js/mainUserinterface.js"></script>
 
 </body>
 

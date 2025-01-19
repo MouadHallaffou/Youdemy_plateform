@@ -1,5 +1,4 @@
 <?php
-
 namespace App\views;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -30,7 +29,6 @@ $teachers = $controller->getTeachers();
 <body class="sb-nav-fixed">
 
     <?php require_once __DIR__ . './../public/dist/shared/topbar.php'; ?>
-
 
     <div id="layoutSidenav">
 
@@ -68,28 +66,6 @@ $teachers = $controller->getTeachers();
                         </div>
                     </div>
 
-                    <!-- <div class="row">
-                        <div class="col-xl-6">
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <i class="fas fa-chart-area me-1"></i>
-                                    Area Chart Example
-                                </div>
-                                <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
-                            </div>
-                        </div>
-                        <div class="col-xl-6">
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <i class="fas fa-chart-bar me-1"></i>
-                                    Bar Chart Example
-                                </div>
-                                <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
-                            </div>
-                        </div>
-                    </div> -->
-
-
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-table me-1"></i>
@@ -106,7 +82,6 @@ $teachers = $controller->getTeachers();
                                         <th>Status</th>
                                         <th>Profile</th>
                                         <th>Email</th>
-                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tfoot>
@@ -117,7 +92,6 @@ $teachers = $controller->getTeachers();
                                         <th>Status</th>
                                         <th>Profile</th>
                                         <th>Email</th>
-                                        <th>Actions</th>
                                     </tr>
                                 </tfoot>
                                 <tbody>
@@ -131,9 +105,6 @@ $teachers = $controller->getTeachers();
                                                 <img src="<?= htmlspecialchars($teacher['image_url']); ?>" alt="Profile" width="30" height="30">
                                             </td>
                                             <td><?= htmlspecialchars($teacher['email']); ?></td>
-                                            <td>
-
-                                            </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>

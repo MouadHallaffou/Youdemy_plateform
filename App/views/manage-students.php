@@ -76,7 +76,6 @@ $students = $controller->getStudents();
                                         <th>name</th>
                                         <th>email</th>
                                         <th>status</th>
-                                        <th>nbr cours</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -86,7 +85,6 @@ $students = $controller->getStudents();
                                         <th>name</th>
                                         <th>email</th>
                                         <th>status</th>
-                                        <th>nbr cours</th>
                                         <th>Actions</th>
                                     </tr>
                                 </tfoot>
@@ -97,7 +95,6 @@ $students = $controller->getStudents();
                                             <td><?= htmlspecialchars($student['name']); ?></td>
                                             <td><?= htmlspecialchars($student['email']); ?></td>
                                             <td><?= htmlspecialchars($student['status']); ?></td>
-                                            <td><?= htmlspecialchars('0'); ?></td>
                                             <td>
                                                 <a href="../controllers/crud_users.php?action=active&id=<?= htmlspecialchars($student['user_id']) ?>" class="btn btn-sm btn-success">
                                                     <i class="fas fa-check"></i> active

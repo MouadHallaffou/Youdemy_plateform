@@ -1,60 +1,55 @@
 <?php
 require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../controllers/crud_course.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
+    header('Location: http://localhost/Youdemy_plateform/App/views/userInterface.php');
+    exit();
+}
 
-use App\Config\Database;
-use App\Models\Category;
 use App\Models\Tag;
 use App\Models\Course;
+use App\Config\Database;
+use App\Models\Category;
+use App\controllers\CourseController;
 
 $pdo = Database::connect();
 $categoryModel = new Category($pdo);
 $tagModel = new Tag($pdo);
-
 $categories = $categoryModel->getAllCategories();
 $tags = $tagModel->getAllTags();
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 if (isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];
-
     $sql = "SELECT * FROM users WHERE user_id = :user_id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':user_id' => $userId]);
-
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
     if ($user) {
-        // Vérifie si le nom d'utilisateur est défini dans la session
         if (isset($_SESSION['user_name'])) {
             $teacherName = $_SESSION['user_name'];
         } else {
-            // Si le nom d'utilisateur n'est pas défini, utilise le nom récupéré dans la base de données
             $teacherName = $user['name'];
-            $_SESSION['user_name'] = $teacherName;  // Optionnellement, tu peux définir cette valeur dans la session
+            $_SESSION['user_name'] = $teacherName;
         }
     }
 } else {
-    // Gérer le cas où l'utilisateur n'est pas connecté
     echo "Utilisateur non connecté.";
 }
 
-if (isset($teacherName)) {
-    // Passe le nom de l'enseignant à la méthode de récupération des cours
-    $courseModel = new Course($pdo);
-    $courses = $courseModel->getCoursesTeacher($teacherName);
-
-    // Si aucun cours n'est trouvé, initialise un tableau vide
-    if (!is_array($courses)) {
-        $courses = [];
-    }
-} else {
-    // Gérer le cas où $teacherName n'est pas défini
-    $courses = [];
+$searchTerm = $_GET['search'] ?? '';
+if ($searchTerm) {
+    $courseController = new CourseController($pdo);
+    $coursesaccepted = $courseController->searchCourses($searchTerm, $courses);
 }
 
+$courseModel = new Course($pdo);
+$courses = $courseModel->getCoursesTeacher($_SESSION['user_name']);
+if (!is_array($courses)) {
+    $courses = [];
+}
 ?>
 
 <!DOCTYPE html>
@@ -90,40 +85,50 @@ if (isset($teacherName)) {
             YOUDEMY
         </a>
 
-        <div class="relative mx-auto hidden lg:block">
-            <input class="border border-gray-300 placeholder-current h-10 px-5 pr-16 rounded-lg text-sm focus:outline-none dark:bg-gray-500 dark:border-gray-50 dark:text-gray-200" type="search" name="search" placeholder="Recherche...">
+        <form method="GET" action="" class="relative mx-auto lg:block">
+            <input
+                class="border border-gray-200 placeholder-current h-12 px-10 pr-20 rounded-lg text-sm focus:outline-none dark:bg-gray-400 dark:border-gray-50 dark:text-gray-200"
+                type="search"
+                name="search"
+                placeholder="Search ..."
+                value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
             <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
                 <i class="fas fa-search text-gray-600 dark:text-gray-200 h-4 w-4"></i>
             </button>
-        </div>
+        </form>
+
 
         <div class="lg:flex items-center relative">
 
-            <div class="flex items-center">
-                <span class="text-white text-lg font-semibold px-1"><?php echo htmlspecialchars($teacherName ?? '')  ; ?></span>
-                <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden mr-3">
-                <img src="<?= htmlspecialchars($user['image_url'] ?? 'https://cdn.sofifa.net/players/209/981/25_120.png'); ?>" alt="Profil" class="w-full h-full object-cover">
+            <div class="relative inline-block text-left">
+                <div>
+                    <button type="button" class="inline-flex items-center text-gray-700 dark:text-gray-200 focus:outline-none" id="menu-button" aria-expanded="true" aria-haspopup="true" onclick="toggleMenu()">
+                        <span class="ml-2"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+                        <img src="<?= htmlspecialchars($_SESSION['image_url'] ?? 'https://cdn.sofifa.net/players/209/981/25_120.png') ?>" alt="Profil" class="rounded-full" style="width: 30px; height: 30px;">
+                    </button>
+                </div>
+
+                <div id="menu" class="absolute right-0 z-10 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
+                    <div class="py-1" role="none">
+                        <a href="http://localhost/Youdemy_plateform/App/views/editProfile.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Profile</a>
+                        <a href="#!" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Settings</a>
+                        <a href="#!" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Activity Log</a>
+                        <div class="border-t border-gray-200 dark:border-gray-700"></div>
+                        <a href="http://localhost/Youdemy_plateform/App/controllers/logout.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Logout</a>
+                    </div>
                 </div>
             </div>
 
-            <div class="ml-auto lg:hidden">
-                <button id="hamburger-menu" class="text-white focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
-                    </svg>
-                </button>
-            </div>
-
             <div id="menu-items" class="lg:flex items-center hidden lg:ml-4 flex-col lg:flex-row bg-gray-800 lg:bg-transparent p-4 lg:p-0 absolute lg:relative top-12 lg:top-0 right-0 lg:right-auto w-48 lg:w-auto rounded-md shadow-lg lg:shadow-none">
-                <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="add-course-button">
-                    Ajouter un Cours
+                <button class="py-1.5 px-3 m-1 text-center bg-violet-700 rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600" id="add-course-button">
+                    Ajouter
                 </button>
 
-                <a href="teacher_manage_course.php" class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600">
-                    Mes Cours
+                <a href="teacher_manage_course.php" class="py-1.5 px-3 m-1 text-center bg-violet-700 rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600">
+                    Modifier
                 </a>
 
-                <a href="../../../Youdemy_plateform/App/controllers/logout.php" class="py-1.5 px-3 m-1 text-center bg-red-700 border rounded-md text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600">
+                <a href="../../../Youdemy_plateform/App/controllers/logout.php" class="py-1.5 px-3 m-1 text-center bg-red-700 rounded-md text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600">
                     Déconnexion
                 </a>
             </div>
@@ -133,29 +138,40 @@ if (isset($teacherName)) {
 
     <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 mt-20">
         <!-- Section des cartes de cours -->
-        <div class="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-10">
+
+        <div id="course-container" class="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-10">
             <?php foreach ($courses as $course): ?>
-                <div class="border border-gray-400 bg-white rounded flex flex-col justify-between leading-normal shadow-md">
+                <div
+                    class="course-card border border-gray-400 bg-white rounded flex flex-col justify-between leading-normal shadow-md cursor-pointer"
+                    onclick="showPopup(<?= htmlspecialchars(json_encode($course)); ?>)">
                     <div class="p-4">
-                        <iframe id="video_iframe" src="https://www.youtube.com/embed/VKqZNPG4o_4" class="w-full h-60 rounded" frameborder="0" allowfullscreen></iframe>
+                        <?php if ($course['contenu'] === 'video'): ?>
+                            <?php $embedUrl = CourseController::convertToEmbedUrl($course['video_url']); ?>
+                            <?php if ($embedUrl): ?>
+                                <iframe src="<?= htmlspecialchars($embedUrl); ?>" class="w-full h-60 rounded" frameborder="0" allowfullscreen></iframe>
+                            <?php else: ?>
+                                <p>URL de vidéo invalide.</p>
+                            <?php endif; ?>
+                        <?php elseif ($course['contenu'] === 'document'): ?>
+                            <div class="document-text">
+                                <p><?= htmlspecialchars(CourseController::truncateText($course['document_text'], 300)); ?></p>
+                                <button class="text-blue-500 hover:underline text-sm">Afficher plus</button>
+                            </div>
+                        <?php endif; ?>
                         <a href="#" class="text-gray-900 font-bold text-lg mb-2 hover:text-indigo-600"><?= htmlspecialchars($course['titre']); ?></a>
-                        <p class="text-gray-700 text-sm">Description du contenu du cours ici...</p>
+                        <p class="text-gray-700 text-sm"><?= htmlspecialchars($course['description']); ?></p>
                     </div>
                     <div class="flex items-center p-4 border-t border-gray-300">
-                        <a href="#">
-                            <img class="w-10 h-10 rounded-full mr-4" src="https://tailwindcss.com/img/jonathan.jpg" alt="Avatar de l'enseignant">
-                        </a>
+                        <img class="w-10 h-10 rounded-full mr-4" src="<?= htmlspecialchars($course['image_url']); ?>" alt="enseignant">
                         <div class="text-sm">
-                            <a href="#" class="text-gray-900 font-semibold leading-none hover:text-indigo-600"><?= htmlspecialchars($course['user_name']); ?></a>
-                            <p class="text-gray-600">Date de création du cours: 2025-01-15</p>
+                            <a href="#" class="text-gray-900 font-semibold leading-none hover:text-indigo-600"><?php echo $teacherName; ?></a>
+                            <p class="text-gray-600">Date de création du cours: <?= htmlspecialchars($course['date']); ?></p>
                         </div>
-                        <button class="py-1.5 px-3 m-1 text-center bg-violet-700 border rounded-md text-white hover:bg-violet-600 dark:bg-violet-700 dark:hover:bg-violet-600">
-                            Détails
-                        </button>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
+
 
         <!-- Formulaire d'Ajout de Cours -->
         <div id="add-course-form" class="hidden">
@@ -238,7 +254,7 @@ if (isset($teacherName)) {
         </div>
     </div>
 
-    <footer class="bg-sky-800 rounded-lg">
+    <footer class="bg-sky-800 fixed bottom-0 w-full">
         <div class="mx-auto max-w-7xl py-4 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
             <nav class="-mx-5 -my-2 flex flex-wrap justify-center order-2" aria-label="Footer">
                 <div class="px-5">
@@ -261,7 +277,7 @@ if (isset($teacherName)) {
             </div>
             <div class="mt-4 md:order-1 md:mt-0">
                 <p class="text-center text-base text-white">
-                    &copy; YOUDEMY PLATFORME.
+                    &copy; 2025 YOUDEMY PLATFORME.
                 </p>
             </div>
         </div>
@@ -281,6 +297,12 @@ if (isset($teacherName)) {
         document.getElementById("form-close").addEventListener("click", function() {
             document.getElementById("add-course-form").classList.add('hidden');
         });
+
+        // profile menu
+        function toggleMenu() {
+            const menu = document.getElementById("menu");
+            menu.classList.toggle("hidden");
+        }
     </script>
 
 </body>
