@@ -16,9 +16,15 @@ class TagController {
         return $this->tagModel->getAllTags();
     }
 
-    public function createTag(string $tagName): void {
-        if (!empty($tagName)) {
-            $this->tagModel->createTag($tagName);
+    public function createTag(string $tagNames): void {
+        if (!empty($tagNames)) {
+            $tagsArray = explode(',', $tagNames);
+            foreach ($tagsArray as $tagName) {
+                $tagName = trim($tagName); 
+                if (!empty($tagName)) {
+                    $this->tagModel->createTag($tagName);
+                }
+            }
             header("Location: ../views/tags.php");
             exit;
         }

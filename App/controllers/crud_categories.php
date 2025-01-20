@@ -16,14 +16,20 @@ class CatyroryController {
         return $this->categoryModel->getAllCategories();
     }
 
-    public function createCategory(string $categoryName): void {
-        if (!empty($categoryName)) {
-            $this->categoryModel->createCategory($categoryName);
+    public function createCategory(string $categoryNames): void {
+        if (!empty($categoryNames)) {
+            $categoriesArray = explode(',', $categoryNames);
+            foreach ($categoriesArray as $categoryName) {
+                $categoryName = trim($categoryName); 
+                if (!empty($categoryName)) {
+                    $this->categoryModel->createCategory($categoryName);
+                }
+            }
             header("Location: ../views/categories.php");
             exit;
         }
     }
-
+    
     public function updateCategory(int $categoryId, string $categoryName): void {
         if (!empty($categoryName)) {
             $this->categoryModel->updateCategory($categoryId, $categoryName);
