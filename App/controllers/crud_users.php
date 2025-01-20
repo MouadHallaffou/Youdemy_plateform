@@ -128,13 +128,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Vérifier si l'utilisateur a un statut "suspended"
             if ($user['status'] === 'suspended') {
                 echo "Votre compte  suspendu. contacter l'administrateur.";
+                header('Location: http://localhost/Youdemy_plateform/index.php');
                 exit();
             }
-
-            // Vérifier les identifiants
+            // Verifier le passworde
             if (password_verify($password, $user['password'])) {
 
-                // Créer les sessions après une connexion réussie
                 $_SESSION['user_id'] = $user['user_id'];
                 $_SESSION['user_name'] = $user['name'];
                 $_SESSION['user_role'] = $user['role'];

@@ -4,9 +4,9 @@ use App\Models\User;
 
 if (session_status()) {
     User::logout();
-    header('Location: ../views/userInterface.php');
+    header('Location: http://localhost/Youdemy_plateform/index.php');
     exit();
 } else {
-    header('Location: ../views/userInterface.php');
+    header('Location: http://localhost/Youdemy_plateform/index.php');
     exit();
 }

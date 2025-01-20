@@ -106,7 +106,6 @@ class CourseController
                 $this->editCourse($_POST);
             }
         }
-
         if (isset($_GET['action'])) {
             if ($_GET['action'] === 'accept' && isset($_GET['id'])) {
                 $this->courseModel->updateCourseStatus((int)$_GET['id'], 'accepte');

@@ -155,7 +155,6 @@ if ($searchTerm) {
             <div id="pagination"></div>
         </div>
 
-
         <!-- Popup de details -->
         <div id="course-popup" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center">
             <div class="bg-white rounded-lg shadow-lg max-w-5xl w-full p-6 relative">
