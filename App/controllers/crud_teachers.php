@@ -12,7 +12,7 @@ $userId = $_GET['id'] ?? null;
 if ($action && $userId) {
     switch ($action) {
         case 'accept':
-            // Accepter l'enseignant (changer son statut à 'active')
+            // Accepter enseignant (changer son statut à 'active')
             if (Teacher::acceptTeacher($pdo, $userId)) {
                 header("Location: ../views/validate-teachers.php?status=success");
             } else {
@@ -21,7 +21,7 @@ if ($action && $userId) {
             break;
 
         case 'change_to_student':
-            // Changer l'enseignant en étudiant (changer son rôle et son statut)
+            // Changer enseignant en étudiant (changer son rôle et son statut)
             if (Teacher::changeTeacherToStudent($pdo, $userId)) {
                 header("Location: ../views/validate-teachers.php?status=changed");
             } else {

@@ -158,7 +158,7 @@ if (!is_array($courses)) {
                             </div>
                             <div class="tags flex flex-wrap gap-2 mt-2">
                                 <?php foreach (explode(',', $course['tags']) as $tag): ?>
-                                    <span class="text-xs font-medium bg-blue-300 text-gray-800 rounded-full px-3 py-1"><?= htmlspecialchars(trim($tag)); ?></span>
+                                    <span class="text-xs font-medium bg-blue-300 text-gray-800 rounded-full px-3 py-1"> <?= htmlspecialchars(trim($tag));?></span>
                                 <?php endforeach; ?>
                             </div>
                         <?php endif; ?>

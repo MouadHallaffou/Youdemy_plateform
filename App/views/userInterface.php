@@ -87,7 +87,7 @@ $pagedCourses = array_slice($courses, $startIndex, $itemsPerPage);
                         <div class="py-1" role="none">
                             <a href="http://localhost/Youdemy_plateform/App/views/editProfile.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Profile</a>
                             <a href="studentMesCours.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Mes Cours</a>
-                            <a href="#!" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">All Cours</a>
+                            <a href="http://localhost/Youdemy_plateform/App/views/userInterface.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">All Cours</a>
                             <div class="border-t border-gray-200 dark:border-gray-700"></div>
                             <a href="http://localhost/Youdemy_plateform/App/controllers/logout.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Logout</a>
                         </div>

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\controllers;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
@@ -69,33 +70,36 @@ class CourseController
         $contentType = $data['content_type'] ?? null;
         $videoUrl = $data['video_url'] ?? null;
         $documentText = $data['document_text'] ?? null;
+        $tags = $data['tags'] ?? [];
 
         try {
             if (!$courseId || !$title || !$description || !$categoryId || !$contentType) {
                 throw new \Exception("Tous les champs obligatoires doivent être remplis.");
             }
 
-            $dataToUpdate = [
+            $this->courseModel->updateCourse([
                 'course_id' => $courseId,
                 'title' => $title,
                 'description' => $description,
                 'category_id' => $categoryId,
                 'content_type' => $contentType,
-                'video_url' => $videoUrl ?? null,
-                'document_text' => $documentText ?? null
-            ];
+                'video_url' => $contentType === 'video' ? $videoUrl : null,
+                'document_text' => $contentType === 'document' ? $documentText : null
+            ]);
 
-            $this->courseModel->updateCourse($dataToUpdate);
-
-            if (!$this->courseModel->updateCourse($dataToUpdate)) {
-                echo "La mise à jour a échoué.";
+            if (!empty($tags)) {
+                $this->courseModel->updateTags($courseId, $tags);
             }
-            header('Location: ../views/editCourse.php');
+
+            $this->courseModel->updateCourseStatus($courseId, 'soumis');
+
+            header('Location: ../views/editCourse.php?success=Course updated successfully');
         } catch (\Exception $e) {
             header('Location: ../views/editCourse.php?error=' . urlencode($e->getMessage()));
         }
         exit;
     }
+
 
     public function handleRequest(): void
     {
@@ -157,14 +161,15 @@ class CourseController
     }
 
     // searche methodes by titre
-    public function searchCourses($title, array $courses): array {
+    public function searchCourses($title, array $courses): array
+    {
         return Student::searchByTitle($courses, $title);
     }
 
-    public function getTroisTopCourses($pdo){
+    public function getTroisTopCourses($pdo)
+    {
         return Course::getTopcourses($pdo);
     }
-    
 }
 
 $controller = new CourseController($pdo);
@@ -173,4 +178,4 @@ $courses = $controller->getCourses();
 $coursesaccepted = $controller->getCoursesAcetpted();
 
 //les 3 meilleurs cours :
-$TopCourses = $controller->getTroisTopCourses($pdo); 
+$TopCourses = $controller->getTroisTopCourses($pdo);

@@ -106,54 +106,61 @@ class Course
         return (int)$this->pdo->lastInsertId();
     }
 
-
+    
     public function updateCourse(array $data): void
-    {
+{
+    $courseId = $data['course_id'] ?? null;
+    $title = $data['title'] ?? null;
+    $description = $data['description'] ?? null;
+    $categoryId = $data['category_id'] ?? null;
+    $contentType = $data['content_type'] ?? null; 
+    $videoUrl = $data['video_url'] ?? null;
+    $documentText = $data['document_text'] ?? null;
 
-        $courseId = $data['course_id'] ?? null;
-        $title = $data['title'] ?? null;
-        $description = $data['description'] ?? null;
-        $categoryId = $data['category_id'] ?? null;
-        $videoUrl = $data['video_url'] ?? null;
-        $documentText = $data['document_text'] ?? null;
-
-        if (!$courseId || !$title || !$description || !$categoryId) {
-            throw new Exception("Tous les champs obligatoires doivent être remplis.");
-        }
-
-        $sql = "UPDATE courses SET 
-                    titre = :title, 
-                    description = :description, 
-                    category_id = :category_id, 
-                    video_url = :video_url, 
-                    document_text = :document_text 
-                WHERE course_id = :course_id";
-
-        $stmt = $this->pdo->prepare($sql);
-
-        try {
-            $stmt->execute([
-                ':course_id' => $courseId,
-                ':title' => $title,
-                ':description' => $description,
-                ':category_id' => $categoryId,
-                ':video_url' => $videoUrl,
-                ':document_text' => $documentText
-            ]);
-        } catch (Exception $e) {
-            throw new Exception("Erreur lors de la mise à jour: " . $e->getMessage());
-        }
+    if (!$courseId || !$title || !$description || !$categoryId || !$contentType) {
+        throw new Exception("Tous les champs obligatoires doivent être remplis.");
     }
 
-    public function updateTags($courseId, $tags)
-    {
-        $stmt = $this->pdo->prepare("DELETE FROM course_tags WHERE course_id = ?");
-        $stmt->execute([$courseId]);
+    $sql = "UPDATE courses SET 
+        titre = :title, 
+        description = :description, 
+        contenu = :content_type, 
+        category_id = :category_id, 
+        video_url = :video_url, 
+        document_text = :document_text,
+        status = 'soumis'
+    WHERE course_id = :course_id";
 
+    $stmt = $this->pdo->prepare($sql);
+
+    try {
+        $stmt->execute([
+            ':course_id' => $courseId,
+            ':title' => $title,
+            ':description' => $description,
+            ':content_type' => $contentType,
+            ':category_id' => $categoryId,
+            ':video_url' => $contentType === 'video' ? $videoUrl : null,
+            ':document_text' => $contentType === 'document' ? $documentText : null
+        ]);
+    } catch (Exception $e) {
+        throw new Exception("Erreur lors de la mise à jour: " . $e->getMessage());
+    }
+}
+
+
+
+    public function updateTags(int $courseId, array $tags): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM course_tag WHERE course_id = :course_id");
+        $stmt->execute([':course_id' => $courseId]);
         foreach ($tags as $tagId) {
-            $stmt = $this->pdo->prepare("INSERT INTO course_tags (course_id, tag_id) VALUES (?, ?)");
-            $stmt->execute([$courseId, $tagId]);
+            $stmt = $this->pdo->prepare("INSERT INTO course_tag (course_id, tag_id) VALUES (:course_id, :tag_id)");
+            if (!$stmt->execute([':course_id' => $courseId, ':tag_id' => $tagId])) {
+                return false;
+            }
         }
+        return true;
     }
 
 
