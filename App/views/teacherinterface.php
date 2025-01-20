@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
-    header('Location: http://localhost/Youdemy_plateform/App/views/userInterface.php');
+    header('Location: http://localhost/Youdemy_plateform/index.php');
     exit();
 }
 
@@ -112,7 +112,7 @@ if (!is_array($courses)) {
                     <div class="py-1" role="none">
                         <a href="http://localhost/Youdemy_plateform/App/views/editProfile.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Profile</a>
                         <a href="#!" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Settings</a>
-                        <a href="#!" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Activity Log</a>
+                        <a href="teacher_manage_course.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Mes Courses</a>
                         <div class="border-t border-gray-200 dark:border-gray-700"></div>
                         <a href="http://localhost/Youdemy_plateform/App/controllers/logout.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Logout</a>
                     </div>
@@ -128,10 +128,8 @@ if (!is_array($courses)) {
                     Modifier
                 </a>
 
-                <a href="../../../Youdemy_plateform/App/controllers/logout.php" class="py-1.5 px-3 m-1 text-center bg-red-700 rounded-md text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-600">
-                    Déconnexion
-                </a>
             </div>
+            
         </div>
 
     </nav>
@@ -171,7 +169,6 @@ if (!is_array($courses)) {
                 </div>
             <?php endforeach; ?>
         </div>
-
 
         <!-- Formulaire d'Ajout de Cours -->
         <div id="add-course-form" class="hidden">
@@ -252,6 +249,7 @@ if (!is_array($courses)) {
                 </div>
             </div>
         </div>
+
     </div>
 
     <footer class="bg-sky-800 fixed bottom-0 w-full">

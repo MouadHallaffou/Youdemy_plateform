@@ -105,13 +105,13 @@ function showPopup(course) {
       : '<p class="text-red-600">URL de vidéo invalide.</p>';
   } else if (course.contenu === "document") {
     content = `
-        <textarea class="w-full h-96 p-4 border border-gray-300 rounded" readonly>${course.document_text}</textarea>
-    `;
+<textarea class="w-full h-96 p-4 border border-gray-300 rounded" readonly>${course.document_text}</textarea>
+`;
   }
 
   content += `
-    <h2 class="text-xl font-bold mt-4">${course.titre}</h2>
-    <p class="text-gray-700 mt-2">${course.description}</p>
+<h2 class="text-xl font-bold mt-4">${course.titre}</h2>
+<p class="text-gray-700 mt-2">${course.description}</p>
 `;
 
   popupContent.innerHTML = content;
@@ -123,4 +123,3 @@ function closePopup() {
   const popup = document.getElementById("course-popup");
   popup.classList.add("hidden");
 }
-

@@ -7,6 +7,11 @@ use App\models\Course;
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
+    header('Location: http://localhost/Youdemy_plateform/index.php');
+    exit();
+}
+
 $teacherId = $_SESSION['user_id'];
 $pdo = Database::connect();
 $courseModel = new Course($pdo);

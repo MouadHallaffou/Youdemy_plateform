@@ -93,5 +93,24 @@ class Student extends User
         $inscriptionHandler = new Inscription($this->pdo);
         return $inscriptionHandler->inscrireEtudiant($this->getId(), $courseId);
     }
+
+    // afficher les cours inscrire a l'etudinats
+    public static function getAcceptedCourses(PDO $pdo, $studentId) {
+        if (!$pdo instanceof PDO) {
+            throw new Exception("La connexion PDO n'est pas valide.");
+        }
+        $sql = "SELECT c.course_id, c.titre, c.description, c.contenu, c.video_url, c.document_text, 
+                u.image_url,c.date_status As date, u.name As user_name
+                FROM courses c
+                JOIN inscriptions i ON c.course_id = i.course_id
+                JOIN users u ON u.user_id = c.enseignant_id
+                WHERE i.student_id = :student_id AND c.status = 'accepte' AND i.status = 'active'";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':student_id', $studentId);
+        $stmt->execute();
+        $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        return $courses;
+    } 
     
 }

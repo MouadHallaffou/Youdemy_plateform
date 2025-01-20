@@ -4,10 +4,11 @@ require_once __DIR__ . '/../../../App/controllers/crud_users.php';
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
-    header('Location: http://localhost/Youdemy_plateform/App/views/userInterface.php');
+if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
+    header('Location: http://localhost/Youdemy_plateform/index.php');
     exit();
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">

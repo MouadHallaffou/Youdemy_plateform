@@ -29,7 +29,6 @@ class Course
         ]);
     }
 
-
     private function insertDocument(string $title, string $description, int $categoryId, string $documentText): bool
     {
         $sql = "INSERT INTO courses (titre, description, contenu, category_id, document_text ,enseignant_id) 
