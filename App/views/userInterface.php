@@ -63,13 +63,14 @@ $pagedCourses = array_slice($courses, $startIndex, $itemsPerPage);
         </a>
 
         <form method="GET" action="" class="relative mx-auto lg:block">
-            <input class="border border-gray-200 placeholder-current h-12 px-10 pr-20 rounded-lg text-sm focus:outline-none dark:bg-gray-400 dark:border-gray-50 dark:text-gray-200"
+            <input
+                class="border border-gray-200 placeholder-current h-8 px-10 pr-20 rounded-lg text-sm focus:outline-none dark:bg-gray-800 dark:border-gray-50 dark:text-gray-100"
                 type="search"
                 name="search"
-                placeholder="Search"
-                value="<?= htmlspecialchars($searchTerm); ?>">
-            <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
-                <i class="fas fa-search text-gray-600 dark:text-gray-200 h-4 w-4"></i>
+                placeholder="Search ..."
+                value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
+            <button type="submit" class="absolute right-0 top-0 mt-1 mr-4">
+                <i class="fas fa-search text-gray-600 dark:text-gray-100 h-4 w-4"></i>
             </button>
         </form>
 
@@ -104,7 +105,8 @@ $pagedCourses = array_slice($courses, $startIndex, $itemsPerPage);
     </nav>
 
     <div class="max-w-screen-xl mx-auto p-5 sm:p-10 md:p-16 mt-10">
-        <h2 class="text-xl font-bold mb-5">Tous les Cours</h2>
+        <h2 class="text-2xl font-bold mb-5 text-white">Tous les Cours</h2>
+
         <div id="all-courses" class="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-10">
             <?php foreach ($pagedCourses as $course): ?>
                 <div class="course-card border border-gray-400 bg-white rounded flex flex-col justify-between leading-normal shadow-md cursor-pointer" onclick="showPopup(<?= htmlspecialchars(json_encode($course)); ?>)">
@@ -123,7 +125,15 @@ $pagedCourses = array_slice($courses, $startIndex, $itemsPerPage);
                             </div>
                         <?php endif; ?>
                         <a href="#" class="text-gray-900 font-bold text-lg mb-2 hover:text-indigo-600"><?= htmlspecialchars($course['titre']); ?></a>
-                        <p class="text-gray-700 text-sm"><?= htmlspecialchars($course['description']); ?></p>
+                        <p class="text-gray-700 text-sm"><?= htmlspecialchars(CourseController::truncateText($course['description'], 100)); ?></p>
+
+                        <?php if (!empty($course['tags'])): ?>
+                            <div class="tags flex flex-wrap gap-2 mt-2">
+                                <?php foreach (explode(',', $course['tags']) as $tag): ?>
+                                    <span class="text-xs font-medium bg-blue-300 text-gray-800 rounded-full px-3 py-1"><?= htmlspecialchars(trim($tag)); ?></span>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="flex items-center p-4 border-t border-gray-300">
                         <img class="w-10 h-10 rounded-full mr-4" src="<?= htmlspecialchars($course['image_url']); ?>" alt="enseignant">
@@ -141,6 +151,7 @@ $pagedCourses = array_slice($courses, $startIndex, $itemsPerPage);
                 </div>
             <?php endforeach; ?>
         </div>
+
 
         <!-- Pagination -->
         <div class="flex items-center justify-center mt-5">

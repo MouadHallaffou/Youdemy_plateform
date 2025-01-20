@@ -46,8 +46,7 @@ youdemy_platform/
 |App/
 
 ├── config/                 # Configuration générale du projet
-│   ├── database.php        # Fichier de connexion à la base de données
-│   └── constants.php       # Définition des constantes globales utilisées dans le projet
+│   └──  database.php      
 
 ├── controllers/                 # Contrôleurs pour la gestion des fonctionnalités
 │   ├── AuthController.php       # Contrôleur pour l'authentification (login, register, logout)
@@ -59,8 +58,7 @@ youdemy_platform/
 ├── models/                 # Classes et interactions avec la base de données (CRUD)
 │   ├── User.php            # Classe représentant les utilisateurs
 │   ├── Course.php          # Classe représentant les cours
-│   ├── Category.php        # Classe représentant les catégories
-│   └── Enrollment.php      # Classe représentant les inscriptions des utilisateurs aux cours
+│   └── Category.php        # Classe représentant les catégories
 
 ├── views/                  # Fichiers de vue pour l'affichage des pages
 │   ├── auth/               # Vues liées à l'authentification
@@ -86,8 +84,7 @@ youdemy_platform/
 
 ├── index.php               # Point d'entrée principal du projet
 
-├── .htaccess               # Configuration optionnelle pour la réécriture des URLs
-├── .env                    # Variables d'environnement pour configurer l'application (par ex., clé API, mode de développement)
+├── .env                    # Variables d'environnement pour configurer l'application
 ├── composer.json           # Fichier de configuration pour Composer, incluant l'autoloading des classes
 └── README.md               # Documentation du projet
 

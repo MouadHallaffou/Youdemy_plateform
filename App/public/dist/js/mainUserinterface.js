@@ -70,7 +70,7 @@ function changePage(direction) {
 
 function updatePagination(page) {
   const paginationContainer = document.getElementById("pagination");
-  paginationContainer.innerHTML = ""; // Clear previous links
+  paginationContainer.innerHTML = ""; 
 
   for (let i = 0; i < totalPages; i++) {
     const pageLink = document.createElement("button");

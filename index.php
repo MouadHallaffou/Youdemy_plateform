@@ -32,9 +32,11 @@ if ($searchTerm) {
         #course-popup {
             z-index: 1000;
         }
+
         #course-popup .rounded-lg {
             max-height: 90vh;
         }
+
         .hidden {
             display: none;
         }
@@ -49,13 +51,14 @@ if ($searchTerm) {
         </a>
 
         <form method="GET" action="" class="relative mx-auto lg:block">
-            <input class="border border-gray-200 placeholder-current h-12 px-10 pr-20 rounded-lg text-sm focus:outline-none dark:bg-gray-400 dark:border-gray-50 dark:text-gray-200"
+            <input
+                class="border border-gray-200 placeholder-current h-8 px-10 pr-20 rounded-lg text-sm focus:outline-none dark:bg-gray-800 dark:border-gray-50 dark:text-gray-100"
                 type="search"
                 name="search"
-                placeholder="Search"
+                placeholder="Search ..."
                 value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
-            <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
-                <i class="fas fa-search text-gray-600 dark:text-gray-200 h-4 w-4"></i>
+            <button type="submit" class="absolute right-0 top-0 mt-1 mr-4">
+                <i class="fas fa-search text-gray-600 dark:text-gray-100 h-4 w-4"></i>
             </button>
         </form>
 
@@ -73,7 +76,7 @@ if ($searchTerm) {
 
         <div id="course-container" class="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-10">
             <?php foreach ($coursesaccepted as $course): ?>
-                <div class="course-card border border-gray-400 bg-white rounded flex flex-col justify-between leading-normal shadow-md relative">
+                <div id="cardLogin" class="course-card border border-gray-400 bg-white rounded flex flex-col justify-between leading-normal shadow-md relative">
                     <!-- Overlay Div -->
                     <?php if (!isset($_SESSION['user_id'])): ?>
                         <div class="absolute inset-0 bg-black bg-opacity-10 flex items-center justify-center">
@@ -82,6 +85,8 @@ if ($searchTerm) {
                     <?php endif; ?>
 
                     <div class="p-2">
+                        <a href="#" class="text-gray-900 font-bold text-lg mb-2 hover:text-indigo-600"><?= htmlspecialchars($course['titre']); ?></a>
+                        <p class="text-gray-700 text-sm pt-2 pb-2"><?= htmlspecialchars(CourseController::truncateText($course['description'], 100)) ?></p>
                         <?php if ($course['contenu'] === 'video'): ?>
                             <?php $embedUrl = CourseController::convertToEmbedUrl($course['video_url']); ?>
                             <?php if ($embedUrl): ?>
@@ -94,9 +99,12 @@ if ($searchTerm) {
                                 <p><?= htmlspecialchars(CourseController::truncateText($course['document_text'], 300)); ?></p>
                                 <button class="text-blue-500 hover:underline text-sm">Afficher plus</button>
                             </div>
+                            <div class="tags flex flex-wrap gap-2 mt-2">
+                                <?php foreach (explode(',', $course['tags']) as $tag): ?>
+                                    <span class="text-xs font-medium bg-blue-300 text-gray-800 rounded-full px-3 py-1"><?= htmlspecialchars(trim($tag)); ?></span>
+                                <?php endforeach; ?>
+                            </div>
                         <?php endif; ?>
-                        <a href="#" class="text-gray-900 font-bold text-lg mb-2 hover:text-indigo-600"><?= htmlspecialchars($course['titre']); ?></a>
-                        <p class="text-gray-700 text-sm"><?= htmlspecialchars($course['description']); ?></p>
                     </div>
                     <div class="flex items-center p-4 border-t border-gray-300">
                         <img class="w-10 h-10 rounded-full mr-4" src="<?= htmlspecialchars($course['image_url']); ?>" alt="enseignant">

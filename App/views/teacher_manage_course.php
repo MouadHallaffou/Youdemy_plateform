@@ -49,7 +49,7 @@ if (!is_array($courses)) {
         </div>
 
     </nav>
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-20">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 mt-20 mb-40">
         <h2 class="text-3xl font-bold mb-10">Mes Courses</h2>
         <table id="example" class="table-auto w-full">
             <thead>
@@ -58,7 +58,7 @@ if (!is_array($courses)) {
                     <th class="px-4 py-2">titre</th>
                     <th class="px-4 py-2">contenu</th>
                     <th class="px-4 py-2">status</th>
-                    <th class="px-4 py-2">Agecategory</th>
+                    <th class="px-4 py-2">Category</th>
                     <th class="px-4 py-2">Nombre inscription</th>
                     <th class="px-4 py-2">Actions</th>
                 </tr>

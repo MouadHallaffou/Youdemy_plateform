@@ -44,11 +44,11 @@ if (!$course) {
     <nav class="fixed w-full top-0 z-50 px-4 py-2 flex justify-between items-center bg-white dark:bg-gray-800 border-b-2 dark:border-gray-600">
         <a class="text-2xl font-bold text-violet-600 dark:text-white" href="#">YOUDEMY</a>
         <div class="lg:flex items-center">
-            <span class="text-white text-lg mr-4">Bienvenue, <?= htmlspecialchars($teacherName ?? ' ') ?></span>
+        <a href="http://localhost/Youdemy_plateform/App/views/teacher_manage_course.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Retour</a>
         </div>
     </nav>
 
-    <div id="add-course-form" class="flex justify-center items-center mt-20">
+    <div id="add-course-form" class="flex justify-center items-center mt-0">
     <div class="relative p-4 max-w-5xl w-full bg-white rounded-lg shadow-lg">
         <div class="p-5">
             <h1 class="text-3xl font-bold text-center mb-6 text-violet-600">Modifier un Cours</h1>
