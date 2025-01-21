@@ -112,12 +112,5 @@ class Teacher extends User
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // public function searchCourses(string $searchTerm): array
-    // {
-    //     $query = "SELECT * FROM courses WHERE title LIKE :searchTerm OR description LIKE :searchTerm";
-    //     $stmt = $this->pdo->prepare($query);
-    //     $stmt->execute([':searchTerm' => '%' . $searchTerm . '%']);
-    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // }
-
+    
 }

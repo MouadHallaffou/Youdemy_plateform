@@ -14,7 +14,6 @@ class Course
         $this->pdo = $pdo;
     }
 
-
     private function insertVideo(string $title, string $description, int $categoryId, string $videoUrl): bool
     {
         $sql = "INSERT INTO courses (titre, description, contenu, category_id, video_url ,enseignant_id) 
@@ -45,7 +44,14 @@ class Course
 
     public function getCourseById($id)
     {
-        $sql = "SELECT * FROM courses WHERE course_id = :course_id LIMIT 1";
+        $sql = "SELECT c.course_id , c.titre,c.description,c.contenu ,c.status,c.document_text,c.video_url,
+                ct.tag_id ,cg.name As category,group_concat(t.name separator ', ') As tags,t.tag_id,cg.category_id FROM courses c 
+                left join course_tag ct on ct.course_id = c.course_id
+                left join tags t on t.tag_id = ct.tag_id
+                LEFT join categories cg on cg.category_id = c.category_id
+                WHERE c.course_id = :course_id
+                GROUP by c.course_id
+                LIMIT 1;";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['course_id' => $id]);
         $course = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -95,7 +101,6 @@ class Course
         return true;
     }
 
-
     public function addTagsToCourse(int $courseId, array $tagIds): bool
     {
         return $this->insertCourseTags($courseId, $tagIds);
@@ -106,22 +111,21 @@ class Course
         return (int)$this->pdo->lastInsertId();
     }
 
-    
     public function updateCourse(array $data): void
-{
-    $courseId = $data['course_id'] ?? null;
-    $title = $data['title'] ?? null;
-    $description = $data['description'] ?? null;
-    $categoryId = $data['category_id'] ?? null;
-    $contentType = $data['content_type'] ?? null; 
-    $videoUrl = $data['video_url'] ?? null;
-    $documentText = $data['document_text'] ?? null;
+    {
+        $courseId = $data['course_id'] ?? null;
+        $title = $data['title'] ?? null;
+        $description = $data['description'] ?? null;
+        $categoryId = $data['category_id'] ?? null;
+        $contentType = $data['content_type'] ?? null;
+        $videoUrl = $data['video_url'] ?? null;
+        $documentText = $data['document_text'] ?? null;
 
-    if (!$courseId || !$title || !$description || !$categoryId || !$contentType) {
-        throw new Exception("Tous les champs obligatoires doivent être remplis.");
-    }
+        if (!$courseId || !$title || !$description || !$categoryId || !$contentType) {
+            throw new Exception("Tous les champs obligatoires doivent être remplis.");
+        }
 
-    $sql = "UPDATE courses SET 
+        $sql = "UPDATE courses SET 
         titre = :title, 
         description = :description, 
         contenu = :content_type, 
@@ -131,23 +135,22 @@ class Course
         status = 'soumis'
     WHERE course_id = :course_id";
 
-    $stmt = $this->pdo->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
 
-    try {
-        $stmt->execute([
-            ':course_id' => $courseId,
-            ':title' => $title,
-            ':description' => $description,
-            ':content_type' => $contentType,
-            ':category_id' => $categoryId,
-            ':video_url' => $contentType === 'video' ? $videoUrl : null,
-            ':document_text' => $contentType === 'document' ? $documentText : null
-        ]);
-    } catch (Exception $e) {
-        throw new Exception("Erreur lors de la mise à jour: " . $e->getMessage());
+        try {
+            $stmt->execute([
+                ':course_id' => $courseId,
+                ':title' => $title,
+                ':description' => $description,
+                ':content_type' => $contentType,
+                ':category_id' => $categoryId,
+                ':video_url' => $contentType === 'video' ? $videoUrl : null,
+                ':document_text' => $contentType === 'document' ? $documentText : null
+            ]);
+        } catch (Exception $e) {
+            throw new Exception("Erreur lors de la mise à jour: " . $e->getMessage());
+        }
     }
-}
-
 
 
     public function updateTags(int $courseId, array $tags): bool

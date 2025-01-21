@@ -154,7 +154,7 @@ if (!is_array($courses)) {
                         <?php elseif ($course['contenu'] === 'document'): ?>
                             <div class="document-text">
                                 <p><?= htmlspecialchars(CourseController::truncateText($course['document_text'], 400)); ?></p>
-                                <button class="text-blue-500 hover:underline text-sm">Afficher plus</button>
+                                <a href="course_details.php?id=<?= htmlspecialchars($course['course_id']); ?>" class="text-blue-500 hover:underline text-sm">Afficher plus</a>
                             </div>
                             <div class="tags flex flex-wrap gap-2 mt-2">
                                 <?php foreach (explode(',', $course['tags']) as $tag): ?>
