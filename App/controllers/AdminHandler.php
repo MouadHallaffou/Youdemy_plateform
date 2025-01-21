@@ -12,7 +12,6 @@ class AdminHandler {
     public function __construct(PDO $pdo, int $adminId) {
         $this->pdo = $pdo;
 
-        // Fetch admin data to initialize
         $currentAdminData = $this->getCurrentAdminData($adminId);
         $this->admin = new Admin($adminId, $currentAdminData['name'], $currentAdminData['email'], '');
     }

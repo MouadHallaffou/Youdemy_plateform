@@ -79,8 +79,8 @@ $pagedCourses = array_slice($courses, $startIndex, $itemsPerPage);
                 <div class="relative inline-block text-left">
                     <div>
                         <button type="button" class="inline-flex items-center text-gray-700 dark:text-gray-200 focus:outline-none" id="menu-button" aria-expanded="true" aria-haspopup="true" onclick="toggleMenu()">
+                            <span class="ml-2 text-lg">Bienvenu, <?= htmlspecialchars($_SESSION['user_name']) ?></span>
                             <img src="<?= htmlspecialchars($_SESSION['image_url'] ?? 'https://cdn.sofifa.net/players/209/981/25_120.png') ?>" alt="Profil" class="rounded-full" style="width: 30px; height: 30px;">
-                            <span class="ml-2"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
                         </button>
                     </div>
                     <div id="menu" class="absolute right-0 z-10 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 hidden" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">

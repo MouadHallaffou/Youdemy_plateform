@@ -102,7 +102,7 @@ if (!is_array($courses)) {
             <div class="relative inline-block text-left">
                 <div>
                     <button type="button" class="inline-flex items-center text-gray-700 dark:text-gray-200 focus:outline-none" id="menu-button" aria-expanded="true" aria-haspopup="true" onclick="toggleMenu()">
-                        <span class="ml-2"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
+                        <span class="ml-2 text-lg"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
                         <img src="<?= htmlspecialchars($_SESSION['image_url'] ?? 'https://cdn.sofifa.net/players/209/981/25_120.png') ?>" alt="Profil" class="rounded-full" style="width: 30px; height: 30px;">
                     </button>
                 </div>

@@ -133,7 +133,7 @@ class Course
         video_url = :video_url, 
         document_text = :document_text,
         status = 'soumis'
-    WHERE course_id = :course_id";
+        WHERE course_id = :course_id";
 
         $stmt = $this->pdo->prepare($sql);
 
@@ -152,7 +152,6 @@ class Course
         }
     }
 
-
     public function updateTags(int $courseId, array $tags): bool
     {
         $stmt = $this->pdo->prepare("DELETE FROM course_tag WHERE course_id = :course_id");
@@ -165,7 +164,6 @@ class Course
         }
         return true;
     }
-
 
     public function getAllCourses()
     {

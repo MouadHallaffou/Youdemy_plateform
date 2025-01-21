@@ -65,12 +65,12 @@ $pagedCourses = array_slice($mesCourses, $startIndex, $itemsPerPage);
         </a>
 
         <form method="GET" action="" class="relative mx-auto lg:block">
-            <input class="border border-gray-200 placeholder-current h-12 px-10 pr-20 rounded-lg text-sm focus:outline-none dark:bg-gray-400 dark:border-gray-50 dark:text-gray-200"
+            <input class="border border-gray-300 placeholder-current h-8 px-10 pr-20 rounded-lg text-sm focus:outline-none dark:bg-gray-600 dark:border-gray-50 dark:text-gray-100"
                 type="search"
                 name="search"
                 placeholder="Search"
                 value="<?= htmlspecialchars($_GET['search'] ?? '') ?>">
-            <button type="submit" class="absolute right-0 top-0 mt-3 mr-4">
+            <button type="submit" class="absolute right-0 top-0 mt-1 mr-4">
                 <i class="fas fa-search text-gray-600 dark:text-gray-200 h-4 w-4"></i>
             </button>
         </form>
@@ -80,8 +80,8 @@ $pagedCourses = array_slice($mesCourses, $startIndex, $itemsPerPage);
                 <div class="relative inline-block text-left">
                     <div>
                         <button type="button" class="inline-flex items-center text-gray-700 dark:text-gray-200 focus:outline-none" id="menu-button" aria-expanded="true" aria-haspopup="true" onclick="toggleMenu()">
+                            <span class="ml-2 text-lg"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
                             <img src="<?= htmlspecialchars($_SESSION['image_url'] ?? 'https://cdn.sofifa.net/players/209/981/25_120.png') ?>" alt="Profil" class="rounded-full" style="width: 30px; height: 30px;">
-                            <span class="ml-2"><?= htmlspecialchars($_SESSION['user_name']) ?></span>
                         </button>
                     </div>
 
@@ -89,7 +89,7 @@ $pagedCourses = array_slice($mesCourses, $startIndex, $itemsPerPage);
                         <div class="py-1" role="none">
                             <a href="http://localhost/Youdemy_plateform/App/views/editProfile.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Profile</a>
                             <a href="studentMesCours.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Mes Cours</a>
-                            <a href="#!" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">All Cours</a>
+                            <a href="studentMesCours.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">All Cours</a>
                             <div class="border-t border-gray-200 dark:border-gray-700"></div>
                             <a href="http://localhost/Youdemy_plateform/App/controllers/logout.php" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700" role="menuitem">Logout</a>
                         </div>
