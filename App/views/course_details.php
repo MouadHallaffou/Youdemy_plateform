@@ -77,11 +77,11 @@ if (!$course) {
     <!-- Category and Tags -->
     <div class="mb-6">
         <p class="mb-2">
-            <span class="font-semibold">Catégorie :</span> 
+            <!-- <span class="font-semibold">Catégorie :</span>  -->
             <span class="text-blue-600 dark:text-blue-400"><?= htmlspecialchars($course['category']); ?></span>
         </p>
         <p class="mb-2">
-            <span class="font-semibold">Tags :</span>
+            <!-- <span class="font-semibold">Tags :</span> -->
         </p>
         <div class="flex flex-wrap gap-2">
             <?php foreach (explode(',', $course['tags']) as $tag): ?>
