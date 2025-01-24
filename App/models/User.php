@@ -19,7 +19,7 @@ abstract class User {
 
     public function __construct(string $name, string $email, string $password, string $bio = '', string $status = 'active', string $imageUrl = '' ,$id=0) {
         $this->name = $name;
-        $this->setEmail($email); // Appel à la méthode setEmail
+        $this->setEmail($email); 
         $this->password = $this->hashPassword($password);
         $this->bio = $bio;
         $this->status = $status;
